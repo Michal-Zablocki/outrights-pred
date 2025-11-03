@@ -1,2 +1,6 @@
 .env
+__pycache__/*
 /data/*
+*tmp*
+*.png
+*ad_hoc*
