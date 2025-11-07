@@ -2,5 +2,6 @@
 __pycache__/*
 /data/*
 *tmp*
+*private*
 *.png
 *ad_hoc*

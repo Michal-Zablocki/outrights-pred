@@ -127,7 +127,7 @@ def get_api_teams_and_elo_from_clubelo(date: str, country_code: str) -> pd.DataF
 
     elo_data['Elo'] = elo_data['Elo'].apply(round)
 
-    team_map_df = pd.read_excel('team_names.xlsx')
+    team_map_df = pd.read_excel('teams_mapping/team_names.xlsx')
 
     missing_teams = set(elo_data['Club'].tolist()) - set(
         team_map_df['ELO_name'].tolist()
@@ -138,7 +138,9 @@ def get_api_teams_and_elo_from_clubelo(date: str, country_code: str) -> pd.DataF
         )
         raise Exception("Missing teams in team_names.xlsx")
 
-    team_map = {row['ELO_name']: row['API_name'] for _, row in team_map_df.iterrows()}
+    team_map = {
+        row['ELO_name']: row['fixtures_name'] for _, row in team_map_df.iterrows()
+    }
 
     elo_data['Club'] = elo_data['Club'].apply(lambda x: team_map[x])
 
@@ -147,42 +149,30 @@ def get_api_teams_and_elo_from_clubelo(date: str, country_code: str) -> pd.DataF
     return elo_data[['Club', 'Elo']]
 
 
-def get_custom_api_teams_and_elo_from_opta(country_code: str) -> pd.DataFrame:
-    if country_code == 'BR':
-        power_df = pd.read_csv('data/brasil_seriea_opta_20251030.csv')
-    else:
-        raise Exception("Country not supported.")
-
-    team_map_df = pd.read_excel('team_names.xlsx')
+def get_data_from_regression(country_code: str) -> pd.DataFrame:
+    team_map_df = pd.read_excel('teams_mapping/team_names.xlsx')
     team_map_df = team_map_df[team_map_df['Country_code'] == country_code]
-    team_map_df = team_map_df[['API_name', 'Opta_name']]
+    team_map_df = team_map_df[['fixtures_name', 'Opta_name']]
 
-    df = pd.merge(
-        power_df, team_map_df, left_on='Team', right_on='Opta_name', how='inner'
-    )
+    elo_df = pd.read_csv('data/reg_results.csv')
+    elo_df = elo_df[elo_df['Country_Code'] == country_code]
+    elo_df = elo_df[['Opta_name', 'predicted_Elo']]
 
-    coef = 24.236167012174086
-    intercept = -368.30096053134594
+    df = pd.merge(elo_df, team_map_df, on='Opta_name', how='inner')
 
-    df['Elo'] = df['Rating'] * coef + intercept
-
-    df = df[['API_name', 'Elo']]
-
-    df = df.rename(columns={'API_name': 'Club'})
-
-    df['Elo'] = df['Elo'].round().astype(int)
+    df = df.rename(columns={'fixtures_name': 'Club', 'predicted_Elo': 'Elo'})
 
     return df
 
 
-def build_historical_standings_table_after_n_rounds(
+def build_historical_standings_table_after_at_most_n_rounds(
     league_id: str,
     season: str,
     country_code_elo: Optional[str],
     country_code_api: Optional[str],
-    after_round: int,
     elo_date: Optional[str],
-    modify_elo: bool,
+    last_round_no: int = 999,
+    modify_elo: bool = False,
     stdev: Optional[float] = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
@@ -193,8 +183,7 @@ def build_historical_standings_table_after_n_rounds(
                 lambda x: random.gauss(0, stdev)
             ).round().astype(int)
     else:
-        # elo_df = get_custom_api_teams_and_elo_from_opta(country_code_api)  # TODO: uncomment
-        pass
+        elo_df = get_data_from_regression(country_code_api)
 
     api_get_fixtures_for_league(league_id, season)
 
@@ -205,9 +194,21 @@ def build_historical_standings_table_after_n_rounds(
     points_dict = {row['Club']: 0 for _, row in elo_df.iterrows()}
     games_played_dict = {row['Club']: 0 for _, row in elo_df.iterrows()}
 
+    fixture_teams = set()
+    for fixture in fixtures:
+        home_team = fixture['teams']['home']['name']
+        fixture_teams.add(home_team)
+
+    missing_teams = fixture_teams - set(elo_dict.keys())
+    if len(missing_teams) > 0:
+        print(
+            f"The following teams are missing ELO ratings: {missing_teams}. Please update the mapping file or provide ELO data for these teams."
+        )
+        raise Exception("Missing ELO ratings for some teams.")
+
     for fixture in fixtures:
         round_str = int(fixture['league']['round'].split(' ')[-1])
-        if (round_str > after_round) or (
+        if (round_str > last_round_no) or (
             fixture['fixture']['status']['long'] != 'Match Finished'
         ):
             continue
@@ -268,13 +269,13 @@ def build_historical_standings_table_after_n_rounds(
     return standings_df
 
 
-def simulate_season(
+def simulate_season_after_n_rounds(
     league_id: str,
     season: str,
-    after_round: int,
     standings_df: pd.DataFrame,
-    reverse: bool,
-    modify_elo_in_sim: bool,
+    reverse: bool = False,
+    round_to_overwrite_with_sims_from: int = 999,
+    modify_elo_in_sim: bool = False,
 ) -> pd.DataFrame:
     with open(f"data/api/fixtures_{league_id}_{season}.json", "r") as f:
         fixtures = json.load(f)['response']
@@ -287,7 +288,7 @@ def simulate_season(
 
     for fixture in fixtures:
         round_str = int(fixture['league']['round'].split(' ')[-1])
-        if (round_str <= after_round) and (
+        if (round_str <= round_to_overwrite_with_sims_from) and (
             fixture['fixture']['status']['long'] == 'Match Finished'
         ):
             continue
@@ -359,24 +360,28 @@ def run_multiple_sims(
     season: str,
     country_code_elo: Optional[str],
     country_code_api: Optional[str],
-    after_round: int,
     elo_date: Optional[str],
     number_of_sims: int,
     number_of_winning_places: int,
-    reverse: bool,
-    modify_elo_in_sim: bool,
-    modify_elo_retro: bool,
+    reverse: bool = False,
+    last_round_for_standings: int = 999,
+    round_to_overwrite_with_sims_from: int = 999,
+    modify_elo_in_sim: bool = False,
+    modify_elo_retro: bool = False,
     stdev: Optional[float] = None,
+    standings_df: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
-    standings_df = build_historical_standings_table_after_n_rounds(
-        league_id,
-        season,
-        country_code_elo,
-        country_code_api,
-        after_round,
-        elo_date,
-        modify_elo_retro,
-    )
+    if standings_df is None:
+        standings_df = build_historical_standings_table_after_at_most_n_rounds(
+            league_id,
+            season,
+            country_code_elo,
+            country_code_api,
+            elo_date,
+            last_round_for_standings,
+            modify_elo_retro,
+            stdev,
+        )
     print(standings_df)
 
     winners = dict()
@@ -390,8 +395,13 @@ def run_multiple_sims(
                 'Elo'
             ].apply(lambda x: random.gauss(0, stdev)).round().astype(int)
 
-        winners_df = simulate_season(
-            league_id, season, after_round, new_standings_df, reverse, modify_elo_in_sim
+        winners_df = simulate_season_after_n_rounds(
+            league_id,
+            season,
+            new_standings_df,
+            reverse,
+            round_to_overwrite_with_sims_from,
+            modify_elo_in_sim,
         )
 
         if (
