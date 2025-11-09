@@ -1,0 +1,169 @@
+ELO_name,Opta_name,Country_Code,Level,Elo,Rating,predicted_Elo,error
+Arsenal,Arsenal,ENG,1.0,2032.83,100.0,2024.5,8.0
+Liverpool,Liverpool,ENG,1.0,1974.46,97.0,1957.91,17.0
+Man City,Manchester City,ENG,1.0,1969.44,97.5,1969.01,0.0
+Real Madrid,Real Madrid,ESP,1.0,1953.28,95.6,1926.83,26.0
+Barcelona,Barcelona,ESP,1.0,1927.42,95.1,1915.74,12.0
+Chelsea,Chelsea,ENG,1.0,1896.62,94.7,1906.86,-10.0
+Newcastle,Newcastle United,ENG,1.0,1884.93,93.5,1880.22,5.0
+Aston Villa,Aston Villa,ENG,1.0,1873.86,93.3,1875.78,-2.0
+Atletico,Atlético de Madrid,ESP,1.0,1861.34,92.1,1849.14,12.0
+Bournemouth,AFC Bournemouth,ENG,1.0,1847.42,91.8,1842.48,5.0
+Crystal Palace,Crystal Palace,ENG,1.0,1842.23,93.4,1878.0,-36.0
+Brighton,Brighton & Hove Albion,ENG,1.0,1832.26,92.2,1851.36,-19.0
+Tottenham,Tottenham Hotspur,ENG,1.0,1829.71,91.3,1831.39,-2.0
+Man United,Manchester United,ENG,1.0,1828.63,91.0,1824.73,4.0
+Brentford,Brentford,ENG,1.0,1821.6,90.7,1818.07,4.0
+Sporting,Sporting CP,POR,1.0,1801.66,90.0,1802.53,-1.0
+Everton,Everton,ENG,1.0,1792.01,88.8,1775.89,16.0
+Villarreal,Villarreal,ESP,1.0,1786.77,89.0,1780.33,6.0
+Benfica,Benfica,POR,1.0,1785.96,90.3,1809.19,-23.0
+Fulham,Fulham,ENG,1.0,1775.26,88.7,1773.67,2.0
+Forest,Nottingham Forest,ENG,1.0,1753.99,87.2,1740.38,14.0
+Betis,Real Betis,ESP,1.0,1746.9,86.9,1733.72,13.0
+Porto,Porto,POR,1.0,1744.0,87.7,1751.47,-7.0
+Bilbao,Athletic Club,ESP,1.0,1741.16,85.7,1707.08,34.0
+Burnley,Burnley,ENG,1.0,1734.79,85.4,1700.42,34.0
+Leeds,Leeds United,ENG,1.0,1732.74,85.3,1698.2,35.0
+West Ham,West Ham United,ENG,1.0,1710.39,86.2,1718.18,-8.0
+Wolves,Wolverhampton Wanderers,ENG,1.0,1690.03,84.5,1680.44,10.0
+Celta,Celta de Vigo,ESP,1.0,1680.4,84.2,1673.78,7.0
+Osasuna,Osasuna,ESP,1.0,1675.29,83.6,1660.46,15.0
+Rayo Vallecano,Rayo Vallecano,ESP,1.0,1675.08,83.9,1667.12,8.0
+Braga,Sporting Braga,POR,1.0,1672.07,84.7,1684.88,-13.0
+Espanyol,Espanyol,ESP,1.0,1665.47,83.0,1647.15,18.0
+Valencia,Valencia,ESP,1.0,1658.65,82.6,1638.27,20.0
+Sociedad,Real Sociedad,ESP,1.0,1649.71,83.1,1649.37,0.0
+Sevilla,Sevilla,ESP,1.0,1647.88,82.4,1633.83,14.0
+Alaves,Alavés,ESP,1.0,1643.55,82.6,1638.27,5.0
+Getafe,Getafe,ESP,1.0,1643.33,82.4,1633.83,10.0
+Mallorca,Mallorca,ESP,1.0,1638.74,81.9,1622.73,16.0
+Sunderland,Sunderland,ENG,1.0,1634.46,85.9,1711.52,-77.0
+Coventry,Coventry City,ENG,2.0,1623.37,83.2,1651.58,-28.0
+Levante,Levante,ESP,1.0,1610.54,80.7,1596.09,14.0
+Elche,Elche,ESP,1.0,1609.4,81.6,1616.07,-7.0
+Leicester,Leicester City,ENG,2.0,1600.48,79.8,1576.11,24.0
+Girona,Girona,ESP,1.0,1594.97,79.2,1562.79,32.0
+Leganes,Leganés,ESP,2.0,1582.03,76.1,1493.98,88.0
+Ipswich,Ipswich Town,ENG,2.0,1580.32,80.8,1598.31,-18.0
+Middlesbrough,Middlesbrough,ENG,2.0,1576.95,80.3,1587.21,-10.0
+Las Palmas,Las Palmas,ESP,2.0,1569.59,76.4,1500.64,69.0
+Oviedo,Real Oviedo,ESP,1.0,1561.53,78.8,1553.92,8.0
+Bristol City,Bristol City,ENG,2.0,1559.93,79.7,1573.89,-14.0
+Millwall,Millwall,ENG,2.0,1550.8,79.9,1578.33,-28.0
+Guimaraes,Vitória Guimarães,POR,1.0,1549.33,79.0,1558.36,-9.0
+Almeria,Almería,ESP,2.0,1548.68,77.0,1513.96,35.0
+Sheffield United,Sheffield United,ENG,2.0,1548.13,78.5,1547.26,1.0
+Famalicao,Famalicão,POR,1.0,1547.6,79.6,1571.67,-24.0
+Santander,Racing de Santander,ESP,2.0,1538.55,76.8,1509.52,29.0
+West Brom,West Bromwich Albion,ENG,2.0,1529.9,78.6,1549.48,-20.0
+Southampton,Southampton,ENG,2.0,1527.91,78.0,1536.16,-8.0
+Jagiellonia,Jagiellonia Białystok,POL,1.0,1527.73,79.1,1560.58,-33.0
+Rakow,Raków Częstochowa,POL,1.0,1525.74,80.0,1580.55,-55.0
+Cadiz,Cádiz,ESP,2.0,1525.58,75.4,1478.44,47.0
+Stoke,Stoke City,ENG,2.0,1515.93,79.1,1560.58,-45.0
+Hull,Hull City,ENG,2.0,1513.08,78.7,1551.7,-39.0
+Eibar,Eibar,ESP,2.0,1507.12,74.6,1460.69,46.0
+Gil Vicente,Gil Vicente,POR,1.0,1505.32,78.1,1538.38,-33.0
+QPR,Queens Park Rangers,ENG,2.0,1504.39,77.5,1525.06,-21.0
+Lech,Lech Poznań,POL,1.0,1504.16,78.7,1551.7,-48.0
+Preston,Preston North End,ENG,2.0,1501.51,78.7,1551.7,-50.0
+Granada,Granada,ESP,2.0,1501.26,74.2,1451.81,49.0
+Mirandes,Mirandés,ESP,2.0,1499.49,74.0,1447.37,52.0
+Depor,Deportivo de La Coruña,ESP,2.0,1496.32,75.7,1485.1,11.0
+Burgos,Burgos,ESP,2.0,1493.81,74.9,1467.35,26.0
+Huesca,Huesca,ESP,2.0,1491.24,74.0,1447.37,44.0
+Legia,Legia Warszawa,POL,1.0,1484.51,77.7,1529.5,-45.0
+Moreirense,Moreirense,POR,1.0,1484.46,77.4,1522.84,-38.0
+Gijon,Sporting de Gijón,ESP,2.0,1482.72,73.9,1445.15,38.0
+Charlton,Charlton Athletic,ENG,2.0,1481.71,78.2,1540.6,-59.0
+Blackburn,Blackburn Rovers,ENG,2.0,1480.46,77.3,1520.62,-40.0
+Watford,Watford,ENG,2.0,1480.26,77.3,1520.62,-40.0
+Cordoba,Córdoba,ESP,2.0,1478.94,74.3,1454.03,25.0
+Albacete,Albacete,ESP,2.0,1478.93,74.0,1447.37,32.0
+Gornik,Górnik Zabrze,POL,1.0,1475.94,78.4,1545.04,-69.0
+Rio Ave,Rio Ave,POR,1.0,1474.6,75.2,1474.0,1.0
+Derby,Derby County,ENG,2.0,1472.49,77.6,1527.28,-55.0
+Valladolid,Real Valladolid,ESP,2.0,1471.89,74.2,1451.81,20.0
+Santa Clara,Santa Clara,POR,1.0,1469.62,76.2,1496.2,-27.0
+Arouca,Arouca,POR,1.0,1467.83,74.8,1465.13,3.0
+Pogon,Pogoń Szczecin,POL,1.0,1461.15,76.3,1498.42,-37.0
+Ceuta,Ceuta,ESP,2.0,1457.49,73.9,1445.15,12.0
+Malaga,Málaga,ESP,2.0,1457.17,72.9,1422.95,34.0
+Castellon,Castellón,ESP,2.0,1457.0,73.4,1434.05,23.0
+Cracovia,Cracovia,POL,1.0,1454.87,77.0,1513.96,-59.0
+Estoril,Estoril,POR,1.0,1452.55,76.2,1496.2,-44.0
+Casa Pia,Casa Pia,POR,1.0,1446.87,74.5,1458.47,-12.0
+Birmingham,Birmingham City,ENG,2.0,1442.3,78.1,1538.38,-96.0
+Leonesa,Cultural Leonesa,ESP,2.0,1428.17,72.7,1418.51,10.0
+Nacional,Nacional,POR,1.0,1426.8,74.2,1451.81,-25.0
+Korona,Korona Kielce,POL,1.0,1418.77,75.7,1485.1,-66.0
+Alverca,Alverca,POR,1.0,1389.55,73.7,1440.71,-51.0
+Piast Gliwice,Piast Gliwice,POL,1.0,1386.62,73.5,1436.27,-50.0
+Radomiak,Radomiak Radom,POL,1.0,1384.61,74.3,1454.03,-69.0
+Lubin,Zagłębie Lubin,POL,1.0,1383.36,74.0,1447.37,-64.0
+Katowice,GKS Katowice,POL,1.0,1378.4,74.6,1460.69,-82.0
+Plock,Wisła Płock,POL,1.0,1374.48,75.3,1476.22,-102.0
+Estrela Amadora,Estrela,POR,1.0,1371.94,72.1,1405.19,-33.0
+Tondela,Tondela,POR,1.0,1367.96,72.8,1420.73,-53.0
+Widzew,Widzew Łódź,POL,1.0,1361.46,73.0,1425.17,-64.0
+Motor Lublin,Motor Lublin,POL,1.0,1354.84,73.3,1431.83,-77.0
+Lechia,Lechia Gdańsk,POL,1.0,1352.45,72.7,1418.51,-66.0
+Arka,Arka Gdynia,POL,1.0,1322.5,72.3,1409.63,-87.0
+AVS Futebol,AVS,POR,1.0,1314.42,68.9,1334.16,-20.0
+Nieciecza,Nieciecza,POL,1.0,1309.81,70.8,1376.34,-67.0
+,Flamengo,BR,,,85.7,1707.08,
+,Palmeiras,BR,,,84.9,1689.32,
+,Cruzeiro,BR,,,81.4,1611.63,
+,Mirassol,BR,,,80.8,1598.31,
+,Botafogo,BR,,,80.8,1598.31,
+,Fluminense,BR,,,80.1,1582.77,
+,Corinthians,BR,,,79.6,1571.67,
+,Vasco da Gama,BR,,,79.0,1558.36,
+,Sao Paulo,BR,,,78.4,1545.04,
+,Bahia,BR,,,78.4,1545.04,
+,Atletico Mineiro,BR,,,77.9,1533.94,
+,Internacional,BR,,,77.5,1525.06,
+,Gremio,BR,,,77.0,1513.96,
+,Stockport County,ENG,,,76.6,1505.08,
+,Ceara,BR,,,75.8,1487.32,
+,Santos,BR,,,75.5,1480.66,
+,Vitioria,BR,,,75.1,1471.78,
+,RB Bragantino,BR,,,75.0,1469.57,
+,Fortaleza,BR,,,74.7,1462.91,
+,Juventude,BR,,,73.4,1434.05,
+,Sport Recife,BR,,,73.0,1425.17,
+,Wisła Kraków,POL,,,72.2,1407.41,
+,Vizela,POR,,,71.7,1396.31,
+,Boavista,POR,,,70.6,1371.9,
+,Torreense,POR,,,70.4,1367.46,
+,Chaves,POR,,,70.3,1365.24,
+,União de Leiria,POR,,,69.8,1354.14,
+,Marítimo,POR,,,69.2,1340.82,
+,Farense,POR,,,69.2,1340.82,
+,Benfica II,POR,,,69.0,1336.38,
+,Sporting CP II,POR,,,69.0,1336.38,
+,Académico Viseu,POR,,,68.8,1331.94,
+,Felgueiras 1932,POR,,,68.4,1323.06,
+,Penafiel,POR,,,67.2,1296.42,
+,Feirense,POR,,,66.8,1287.55,
+,Lusitânia Lourosa,POR,,,66.3,1276.45,
+,Paços de Ferreira,POR,,,66.0,1269.79,
+,Leixões,POR,,,65.8,1265.35,
+,Portimonense,POR,,,65.4,1256.47,
+,Polonia Warszawa,POL,,,65.3,1254.25,
+,Miedź Legnica,POL,,,65.2,1252.03,
+,Oliveirense,POR,,,64.8,1243.15,
+,Mafra,POR,,,64.8,1243.15,
+,Sporting Braga II,POR,,,64.8,1243.15,
+,Porto II,POR,,,64.6,1238.71,
+,Polonia Bytom,POL,,,64.0,1225.39,
+,Chrobry Głogów,POL,,,63.6,1216.51,
+,Wieczysta Kraków,POL,,,63.6,1216.51,
+,Pogoń Grodzisk Maz.,POL,,,63.5,1214.29,
+,Pogoń Siedlce,POL,,,63.5,1214.29,
+,Tychy,POL,,,62.6,1194.32,
+,Górnik Łęczna,POL,,,62.1,1183.22,
+,Odra Opole,POL,,,62.1,1183.22,
+,Stal Rzeszów,POL,,,61.8,1176.56,
+,Znicz Pruszków,POL,,,61.4,1167.68,
