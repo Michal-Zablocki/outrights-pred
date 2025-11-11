@@ -8,10 +8,9 @@ import random
 from typing import Optional
 
 from dotenv import load_dotenv
-import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import requests
-from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 
 
@@ -50,8 +49,8 @@ def api_get_leagues() -> None:
     if response.json()['paging']['total'] != 1:
         raise Exception("Error: multiple pages of leagues")
 
-    Path("data/api").mkdir(parents=True, exist_ok=True)
-    with open("data/api/leagues.json", "w") as f:
+    Path("data/fixtures_api").mkdir(parents=True, exist_ok=True)
+    with open("data/fixtures_api/leagues.json", "w") as f:
         json.dump(response.json(), f)
 
 
@@ -72,8 +71,8 @@ def api_get_fixtures_for_league(league_id: str, season: str) -> None:
     if response.json()['paging']['total'] != 1:
         raise Exception("Error: multiple pages of leagues")
 
-    Path("data/api").mkdir(parents=True, exist_ok=True)
-    with open(f"data/api/fixtures_{league_id}_{season}.json", "w") as f:
+    Path("data/fixtures_api").mkdir(parents=True, exist_ok=True)
+    with open(f"data/fixtures_api/fixtures_{league_id}_{season}.json", "w") as f:
         json.dump(response.json(), f)
 
 
@@ -105,7 +104,7 @@ def get_team_names_from_api_dump(path: str) -> None:
 
 
 def find_league_id(country_code: str, league_name: str) -> str:
-    with open("data/api/leagues.json", "r") as f:
+    with open("data/fixtures_api/leagues.json", "r") as f:
         leagues = json.load(f)
         for league in leagues['response']:
             if (
@@ -152,10 +151,11 @@ def get_api_teams_and_elo_from_clubelo(date: str, country_code: str) -> pd.DataF
 def get_data_from_regression(country_code: str) -> pd.DataFrame:
     team_map_df = pd.read_excel('teams_mapping/team_names.xlsx')
     team_map_df = team_map_df[team_map_df['Country_code'] == country_code]
+    team_map_df['Opta_name'] = team_map_df['Opta_name'].str.title().str.strip()
     team_map_df = team_map_df[['fixtures_name', 'Opta_name']]
 
     elo_df = pd.read_csv('data/reg_results.csv')
-    elo_df = elo_df[elo_df['Country_Code'] == country_code]
+    elo_df = elo_df[elo_df['Country'] == country_code]
     elo_df = elo_df[['Opta_name', 'predicted_Elo']]
 
     df = pd.merge(elo_df, team_map_df, on='Opta_name', how='inner')
@@ -176,6 +176,10 @@ def build_historical_standings_table_after_at_most_n_rounds(
     stdev: Optional[float] = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
+    date_str = elo_date.replace('-', '')
+    if not os.path.exists(f"data/elo/{date_str}.csv"):
+        download_elo_data(elo_date)
+
     if country_code_elo is not None:
         elo_df = get_api_teams_and_elo_from_clubelo(elo_date, country_code_elo)
         if stdev is not None:
@@ -185,9 +189,11 @@ def build_historical_standings_table_after_at_most_n_rounds(
     else:
         elo_df = get_data_from_regression(country_code_api)
 
+    print(elo_df.head(20))
+
     api_get_fixtures_for_league(league_id, season)
 
-    with open(f"data/api/fixtures_{league_id}_{season}.json", "r") as f:
+    with open(f"data/fixtures_api/fixtures_{league_id}_{season}.json", "r") as f:
         fixtures = json.load(f)['response']
 
     elo_dict = {row['Club']: row['Elo'] for _, row in elo_df.iterrows()}
@@ -198,6 +204,9 @@ def build_historical_standings_table_after_at_most_n_rounds(
     for fixture in fixtures:
         home_team = fixture['teams']['home']['name']
         fixture_teams.add(home_team)
+
+    print(fixture_teams)
+    print(elo_dict.keys())
 
     missing_teams = fixture_teams - set(elo_dict.keys())
     if len(missing_teams) > 0:
@@ -277,7 +286,7 @@ def simulate_season_after_n_rounds(
     round_to_overwrite_with_sims_from: int = 999,
     modify_elo_in_sim: bool = False,
 ) -> pd.DataFrame:
-    with open(f"data/api/fixtures_{league_id}_{season}.json", "r") as f:
+    with open(f"data/fixtures_api/fixtures_{league_id}_{season}.json", "r") as f:
         fixtures = json.load(f)['response']
 
     elo_dict = {row['Club']: row['Elo'] for _, row in standings_df.iterrows()}
@@ -384,8 +393,8 @@ def run_multiple_sims(
         )
     print(standings_df)
 
-    winners = dict()
-    number_of_successful_sims = 0
+    winners_with_losing_all_tbs = dict()
+    winners_with_random_tbs = dict()
 
     for _ in tqdm(range(number_of_sims)):
         new_standings_df = copy.deepcopy(standings_df)
@@ -404,23 +413,54 @@ def run_multiple_sims(
             modify_elo_in_sim,
         )
 
+        winners_df['Tiebreaking order'] = np.random.permutation(winners_df.shape[0])
+
+        winners_df = winners_df.sort_values(
+            by=['Points', 'Tiebreaking order'], ascending=reverse
+        ).reset_index(drop=True)
+
         if (
             winners_df.iloc[number_of_winning_places - 1]['Points']
             == winners_df.iloc[number_of_winning_places]['Points']
         ):
-            continue
-        number_of_successful_sims += 1
+            tie_points = winners_df.iloc[number_of_winning_places - 1]['Points']
+
+            for i in range(number_of_winning_places):
+                if winners_df.iloc[i]['Points'] != tie_points:
+                    try:
+                        winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] += 1
+                    except KeyError:
+                        winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] = 1
+        else:
+            for i in range(number_of_winning_places):
+                try:
+                    winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] += 1
+                except KeyError:
+                    winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] = 1
+
         for i in range(number_of_winning_places):
             try:
-                winners[winners_df.iloc[i]['Club']] += 1
+                winners_with_random_tbs[winners_df.iloc[i]['Club']] += 1
             except KeyError:
-                winners[winners_df.iloc[i]['Club']] = 1
+                winners_with_random_tbs[winners_df.iloc[i]['Club']] = 1
 
-    df = pd.DataFrame(list(winners.items()), columns=['Club', 'Wins'])
-    df['% winrate'] = round(df['Wins'] / number_of_successful_sims * 100)
-    df['Expected odds'] = round(number_of_successful_sims / df['Wins'], 2)
-    df = df.sort_values(by=['Wins'], ascending=False).reset_index(drop=True)
+    random_tbs_df = pd.DataFrame(
+        list(winners_with_random_tbs.items()), columns=['Club', 'RTB Wins']
+    )
+    losing_all_tbs_df = pd.DataFrame(
+        list(winners_with_losing_all_tbs.items()), columns=['Club', 'LTB Wins']
+    )
+
+    df = pd.merge(random_tbs_df, losing_all_tbs_df, on='Club', how='outer')
+    df.fillna(0, inplace=True)
+    df.reset_index(drop=True, inplace=True)
+
+    df['% RTB winrate'] = round(df['RTB Wins'] / number_of_sims * 100, 1)
+    df['% LTB winrate'] = round(df['LTB Wins'] / number_of_sims * 100, 1)
+    df['Exp. RTB odds'] = round(number_of_sims / df['RTB Wins'], 2)
+    df['Exp. LTB odds'] = round(number_of_sims / df['LTB Wins'], 2)
+    df = df.sort_values(by=['RTB Wins'], ascending=False).reset_index(drop=True)
     df.index += 1
-    print(f'{number_of_successful_sims} simulations')
+    print(f'{number_of_sims} simulations')
     print(f'{number_of_winning_places} winning places')
     return df

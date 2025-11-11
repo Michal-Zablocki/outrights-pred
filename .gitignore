@@ -3,6 +3,8 @@ __pycache__/*
 /data/elo/*
 /data/fixtures_api/*
 /data/opta/*
+/data/transformed/*
+/data/*.csv
 *tmp*
 *priv*
 *.png

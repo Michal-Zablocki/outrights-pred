@@ -1,169 +1,908 @@
-ELO_name,Opta_name,Country_Code,Level,Elo,Rating,predicted_Elo,error
-Arsenal,Arsenal,ENG,1.0,2032.83,100.0,2024.5,8.0
-Liverpool,Liverpool,ENG,1.0,1974.46,97.0,1957.91,17.0
-Man City,Manchester City,ENG,1.0,1969.44,97.5,1969.01,0.0
-Real Madrid,Real Madrid,ESP,1.0,1953.28,95.6,1926.83,26.0
-Barcelona,Barcelona,ESP,1.0,1927.42,95.1,1915.74,12.0
-Chelsea,Chelsea,ENG,1.0,1896.62,94.7,1906.86,-10.0
-Newcastle,Newcastle United,ENG,1.0,1884.93,93.5,1880.22,5.0
-Aston Villa,Aston Villa,ENG,1.0,1873.86,93.3,1875.78,-2.0
-Atletico,Atlético de Madrid,ESP,1.0,1861.34,92.1,1849.14,12.0
-Bournemouth,AFC Bournemouth,ENG,1.0,1847.42,91.8,1842.48,5.0
-Crystal Palace,Crystal Palace,ENG,1.0,1842.23,93.4,1878.0,-36.0
-Brighton,Brighton & Hove Albion,ENG,1.0,1832.26,92.2,1851.36,-19.0
-Tottenham,Tottenham Hotspur,ENG,1.0,1829.71,91.3,1831.39,-2.0
-Man United,Manchester United,ENG,1.0,1828.63,91.0,1824.73,4.0
-Brentford,Brentford,ENG,1.0,1821.6,90.7,1818.07,4.0
-Sporting,Sporting CP,POR,1.0,1801.66,90.0,1802.53,-1.0
-Everton,Everton,ENG,1.0,1792.01,88.8,1775.89,16.0
-Villarreal,Villarreal,ESP,1.0,1786.77,89.0,1780.33,6.0
-Benfica,Benfica,POR,1.0,1785.96,90.3,1809.19,-23.0
-Fulham,Fulham,ENG,1.0,1775.26,88.7,1773.67,2.0
-Forest,Nottingham Forest,ENG,1.0,1753.99,87.2,1740.38,14.0
-Betis,Real Betis,ESP,1.0,1746.9,86.9,1733.72,13.0
-Porto,Porto,POR,1.0,1744.0,87.7,1751.47,-7.0
-Bilbao,Athletic Club,ESP,1.0,1741.16,85.7,1707.08,34.0
-Burnley,Burnley,ENG,1.0,1734.79,85.4,1700.42,34.0
-Leeds,Leeds United,ENG,1.0,1732.74,85.3,1698.2,35.0
-West Ham,West Ham United,ENG,1.0,1710.39,86.2,1718.18,-8.0
-Wolves,Wolverhampton Wanderers,ENG,1.0,1690.03,84.5,1680.44,10.0
-Celta,Celta de Vigo,ESP,1.0,1680.4,84.2,1673.78,7.0
-Osasuna,Osasuna,ESP,1.0,1675.29,83.6,1660.46,15.0
-Rayo Vallecano,Rayo Vallecano,ESP,1.0,1675.08,83.9,1667.12,8.0
-Braga,Sporting Braga,POR,1.0,1672.07,84.7,1684.88,-13.0
-Espanyol,Espanyol,ESP,1.0,1665.47,83.0,1647.15,18.0
-Valencia,Valencia,ESP,1.0,1658.65,82.6,1638.27,20.0
-Sociedad,Real Sociedad,ESP,1.0,1649.71,83.1,1649.37,0.0
-Sevilla,Sevilla,ESP,1.0,1647.88,82.4,1633.83,14.0
-Alaves,Alavés,ESP,1.0,1643.55,82.6,1638.27,5.0
-Getafe,Getafe,ESP,1.0,1643.33,82.4,1633.83,10.0
-Mallorca,Mallorca,ESP,1.0,1638.74,81.9,1622.73,16.0
-Sunderland,Sunderland,ENG,1.0,1634.46,85.9,1711.52,-77.0
-Coventry,Coventry City,ENG,2.0,1623.37,83.2,1651.58,-28.0
-Levante,Levante,ESP,1.0,1610.54,80.7,1596.09,14.0
-Elche,Elche,ESP,1.0,1609.4,81.6,1616.07,-7.0
-Leicester,Leicester City,ENG,2.0,1600.48,79.8,1576.11,24.0
-Girona,Girona,ESP,1.0,1594.97,79.2,1562.79,32.0
-Leganes,Leganés,ESP,2.0,1582.03,76.1,1493.98,88.0
-Ipswich,Ipswich Town,ENG,2.0,1580.32,80.8,1598.31,-18.0
-Middlesbrough,Middlesbrough,ENG,2.0,1576.95,80.3,1587.21,-10.0
-Las Palmas,Las Palmas,ESP,2.0,1569.59,76.4,1500.64,69.0
-Oviedo,Real Oviedo,ESP,1.0,1561.53,78.8,1553.92,8.0
-Bristol City,Bristol City,ENG,2.0,1559.93,79.7,1573.89,-14.0
-Millwall,Millwall,ENG,2.0,1550.8,79.9,1578.33,-28.0
-Guimaraes,Vitória Guimarães,POR,1.0,1549.33,79.0,1558.36,-9.0
-Almeria,Almería,ESP,2.0,1548.68,77.0,1513.96,35.0
-Sheffield United,Sheffield United,ENG,2.0,1548.13,78.5,1547.26,1.0
-Famalicao,Famalicão,POR,1.0,1547.6,79.6,1571.67,-24.0
-Santander,Racing de Santander,ESP,2.0,1538.55,76.8,1509.52,29.0
-West Brom,West Bromwich Albion,ENG,2.0,1529.9,78.6,1549.48,-20.0
-Southampton,Southampton,ENG,2.0,1527.91,78.0,1536.16,-8.0
-Jagiellonia,Jagiellonia Białystok,POL,1.0,1527.73,79.1,1560.58,-33.0
-Rakow,Raków Częstochowa,POL,1.0,1525.74,80.0,1580.55,-55.0
-Cadiz,Cádiz,ESP,2.0,1525.58,75.4,1478.44,47.0
-Stoke,Stoke City,ENG,2.0,1515.93,79.1,1560.58,-45.0
-Hull,Hull City,ENG,2.0,1513.08,78.7,1551.7,-39.0
-Eibar,Eibar,ESP,2.0,1507.12,74.6,1460.69,46.0
-Gil Vicente,Gil Vicente,POR,1.0,1505.32,78.1,1538.38,-33.0
-QPR,Queens Park Rangers,ENG,2.0,1504.39,77.5,1525.06,-21.0
-Lech,Lech Poznań,POL,1.0,1504.16,78.7,1551.7,-48.0
-Preston,Preston North End,ENG,2.0,1501.51,78.7,1551.7,-50.0
-Granada,Granada,ESP,2.0,1501.26,74.2,1451.81,49.0
-Mirandes,Mirandés,ESP,2.0,1499.49,74.0,1447.37,52.0
-Depor,Deportivo de La Coruña,ESP,2.0,1496.32,75.7,1485.1,11.0
-Burgos,Burgos,ESP,2.0,1493.81,74.9,1467.35,26.0
-Huesca,Huesca,ESP,2.0,1491.24,74.0,1447.37,44.0
-Legia,Legia Warszawa,POL,1.0,1484.51,77.7,1529.5,-45.0
-Moreirense,Moreirense,POR,1.0,1484.46,77.4,1522.84,-38.0
-Gijon,Sporting de Gijón,ESP,2.0,1482.72,73.9,1445.15,38.0
-Charlton,Charlton Athletic,ENG,2.0,1481.71,78.2,1540.6,-59.0
-Blackburn,Blackburn Rovers,ENG,2.0,1480.46,77.3,1520.62,-40.0
-Watford,Watford,ENG,2.0,1480.26,77.3,1520.62,-40.0
-Cordoba,Córdoba,ESP,2.0,1478.94,74.3,1454.03,25.0
-Albacete,Albacete,ESP,2.0,1478.93,74.0,1447.37,32.0
-Gornik,Górnik Zabrze,POL,1.0,1475.94,78.4,1545.04,-69.0
-Rio Ave,Rio Ave,POR,1.0,1474.6,75.2,1474.0,1.0
-Derby,Derby County,ENG,2.0,1472.49,77.6,1527.28,-55.0
-Valladolid,Real Valladolid,ESP,2.0,1471.89,74.2,1451.81,20.0
-Santa Clara,Santa Clara,POR,1.0,1469.62,76.2,1496.2,-27.0
-Arouca,Arouca,POR,1.0,1467.83,74.8,1465.13,3.0
-Pogon,Pogoń Szczecin,POL,1.0,1461.15,76.3,1498.42,-37.0
-Ceuta,Ceuta,ESP,2.0,1457.49,73.9,1445.15,12.0
-Malaga,Málaga,ESP,2.0,1457.17,72.9,1422.95,34.0
-Castellon,Castellón,ESP,2.0,1457.0,73.4,1434.05,23.0
-Cracovia,Cracovia,POL,1.0,1454.87,77.0,1513.96,-59.0
-Estoril,Estoril,POR,1.0,1452.55,76.2,1496.2,-44.0
-Casa Pia,Casa Pia,POR,1.0,1446.87,74.5,1458.47,-12.0
-Birmingham,Birmingham City,ENG,2.0,1442.3,78.1,1538.38,-96.0
-Leonesa,Cultural Leonesa,ESP,2.0,1428.17,72.7,1418.51,10.0
-Nacional,Nacional,POR,1.0,1426.8,74.2,1451.81,-25.0
-Korona,Korona Kielce,POL,1.0,1418.77,75.7,1485.1,-66.0
-Alverca,Alverca,POR,1.0,1389.55,73.7,1440.71,-51.0
-Piast Gliwice,Piast Gliwice,POL,1.0,1386.62,73.5,1436.27,-50.0
-Radomiak,Radomiak Radom,POL,1.0,1384.61,74.3,1454.03,-69.0
-Lubin,Zagłębie Lubin,POL,1.0,1383.36,74.0,1447.37,-64.0
-Katowice,GKS Katowice,POL,1.0,1378.4,74.6,1460.69,-82.0
-Plock,Wisła Płock,POL,1.0,1374.48,75.3,1476.22,-102.0
-Estrela Amadora,Estrela,POR,1.0,1371.94,72.1,1405.19,-33.0
-Tondela,Tondela,POR,1.0,1367.96,72.8,1420.73,-53.0
-Widzew,Widzew Łódź,POL,1.0,1361.46,73.0,1425.17,-64.0
-Motor Lublin,Motor Lublin,POL,1.0,1354.84,73.3,1431.83,-77.0
-Lechia,Lechia Gdańsk,POL,1.0,1352.45,72.7,1418.51,-66.0
-Arka,Arka Gdynia,POL,1.0,1322.5,72.3,1409.63,-87.0
-AVS Futebol,AVS,POR,1.0,1314.42,68.9,1334.16,-20.0
-Nieciecza,Nieciecza,POL,1.0,1309.81,70.8,1376.34,-67.0
-,Flamengo,BR,,,85.7,1707.08,
-,Palmeiras,BR,,,84.9,1689.32,
-,Cruzeiro,BR,,,81.4,1611.63,
-,Mirassol,BR,,,80.8,1598.31,
-,Botafogo,BR,,,80.8,1598.31,
-,Fluminense,BR,,,80.1,1582.77,
-,Corinthians,BR,,,79.6,1571.67,
-,Vasco da Gama,BR,,,79.0,1558.36,
-,Sao Paulo,BR,,,78.4,1545.04,
-,Bahia,BR,,,78.4,1545.04,
-,Atletico Mineiro,BR,,,77.9,1533.94,
-,Internacional,BR,,,77.5,1525.06,
-,Gremio,BR,,,77.0,1513.96,
-,Stockport County,ENG,,,76.6,1505.08,
-,Ceara,BR,,,75.8,1487.32,
-,Santos,BR,,,75.5,1480.66,
-,Vitioria,BR,,,75.1,1471.78,
-,RB Bragantino,BR,,,75.0,1469.57,
-,Fortaleza,BR,,,74.7,1462.91,
-,Juventude,BR,,,73.4,1434.05,
-,Sport Recife,BR,,,73.0,1425.17,
-,Wisła Kraków,POL,,,72.2,1407.41,
-,Vizela,POR,,,71.7,1396.31,
-,Boavista,POR,,,70.6,1371.9,
-,Torreense,POR,,,70.4,1367.46,
-,Chaves,POR,,,70.3,1365.24,
-,União de Leiria,POR,,,69.8,1354.14,
-,Marítimo,POR,,,69.2,1340.82,
-,Farense,POR,,,69.2,1340.82,
-,Benfica II,POR,,,69.0,1336.38,
-,Sporting CP II,POR,,,69.0,1336.38,
-,Académico Viseu,POR,,,68.8,1331.94,
-,Felgueiras 1932,POR,,,68.4,1323.06,
-,Penafiel,POR,,,67.2,1296.42,
-,Feirense,POR,,,66.8,1287.55,
-,Lusitânia Lourosa,POR,,,66.3,1276.45,
-,Paços de Ferreira,POR,,,66.0,1269.79,
-,Leixões,POR,,,65.8,1265.35,
-,Portimonense,POR,,,65.4,1256.47,
-,Polonia Warszawa,POL,,,65.3,1254.25,
-,Miedź Legnica,POL,,,65.2,1252.03,
-,Oliveirense,POR,,,64.8,1243.15,
-,Mafra,POR,,,64.8,1243.15,
-,Sporting Braga II,POR,,,64.8,1243.15,
-,Porto II,POR,,,64.6,1238.71,
-,Polonia Bytom,POL,,,64.0,1225.39,
-,Chrobry Głogów,POL,,,63.6,1216.51,
-,Wieczysta Kraków,POL,,,63.6,1216.51,
-,Pogoń Grodzisk Maz.,POL,,,63.5,1214.29,
-,Pogoń Siedlce,POL,,,63.5,1214.29,
-,Tychy,POL,,,62.6,1194.32,
-,Górnik Łęczna,POL,,,62.1,1183.22,
-,Odra Opole,POL,,,62.1,1183.22,
-,Stal Rzeszów,POL,,,61.8,1176.56,
-,Znicz Pruszków,POL,,,61.4,1167.68,
+ELO_name,Opta_name,Country,Level,Elo,Rating,predicted_Elo,error
+Arsenal,Arsenal,ENG,1.0,2032.83,100.0,2053.77,-21.0
+Paris Sg,Paris Saint-Germain,FRA,1.0,1987.78,96.1,1960.11,28.0
+Liverpool,Liverpool,ENG,1.0,1974.46,97.1,1984.13,-10.0
+Man City,Manchester City,ENG,1.0,1969.44,97.5,1993.73,-24.0
+Bayern,Bayern München,GER,1.0,1967.82,98.3,2012.94,-45.0
+Real Madrid,Real Madrid,ESP,1.0,1953.28,95.2,1938.5,15.0
+Inter,Internazionale,ITA,1.0,1928.09,93.3,1892.87,35.0
+Barcelona,Barcelona,ESP,1.0,1927.42,94.9,1931.29,-4.0
+Chelsea,Chelsea,ENG,1.0,1896.62,94.3,1916.88,-20.0
+Newcastle,Newcastle United,ENG,1.0,1884.93,93.5,1897.67,-13.0
+Aston Villa,Aston Villa,ENG,1.0,1873.86,93.2,1890.47,-17.0
+Atletico,Atlético De Madrid,ESP,1.0,1861.34,92.2,1866.45,-5.0
+Bournemouth,Afc Bournemouth,ENG,1.0,1847.42,91.6,1852.04,-5.0
+Dortmund,Borussia Dortmund,GER,1.0,1845.07,92.1,1864.05,-19.0
+Crystal Palace,Crystal Palace,ENG,1.0,1842.23,93.3,1892.87,-51.0
+Napoli,Napoli,ITA,1.0,1832.78,89.7,1806.42,26.0
+Brighton,Brighton & Hove Albion,ENG,1.0,1832.26,92.1,1864.05,-32.0
+Tottenham,Tottenham Hotspur,ENG,1.0,1829.71,91.3,1844.84,-15.0
+Leverkusen,Bayer Leverkusen,GER,1.0,1829.62,90.6,1828.03,2.0
+Man United,Manchester United,ENG,1.0,1828.63,90.9,1835.23,-7.0
+Brentford,Brentford,ENG,1.0,1821.6,90.5,1825.63,-4.0
+Atalanta,Atalanta,ITA,1.0,1811.46,88.8,1784.8,27.0
+Roma,Roma,ITA,1.0,1804.7,88.7,1782.4,22.0
+Sporting,Sporting Cp,POR,1.0,1801.66,89.1,1792.01,10.0
+Milan,Milan,ITA,1.0,1796.57,89.4,1799.21,-3.0
+Everton,Everton,ENG,1.0,1792.01,88.7,1782.4,10.0
+Psv,Psv,NED,1.0,1790.2,88.2,1770.39,20.0
+Juventus,Juventus,ITA,1.0,1787.81,87.9,1763.19,25.0
+Villarreal,Villarreal,ESP,1.0,1786.77,88.4,1775.2,12.0
+Benfica,Benfica,POR,1.0,1785.96,88.8,1784.8,1.0
+Lille,Lille,FRA,1.0,1775.42,86.5,1729.57,46.0
+Fulham,Fulham,ENG,1.0,1775.26,88.6,1780.0,-5.0
+Marseille,Olympique Marseille,FRA,1.0,1767.09,86.5,1729.57,38.0
+Rb Leipzig,Rb Leipzig,GER,1.0,1757.27,89.0,1789.61,-32.0
+Monaco,Monaco,FRA,1.0,1755.22,86.0,1717.56,38.0
+Lyon,Olympique Lyonnais,FRA,1.0,1754.57,86.1,1719.96,35.0
+Forest,Nottingham Forest,ENG,1.0,1753.99,86.9,1739.17,15.0
+Lazio,Lazio,ITA,1.0,1751.54,86.6,1731.97,20.0
+Brugge,Club Brugge,BEL,1.0,1747.34,88.8,1784.8,-37.0
+Betis,Real Betis,ESP,1.0,1746.9,87.2,1746.38,1.0
+Bologna,Bologna,ITA,1.0,1744.35,86.7,1734.37,10.0
+Porto,Porto,POR,1.0,1744.0,86.5,1729.57,14.0
+Frankfurt,Eintracht Frankfurt,GER,1.0,1741.36,87.3,1748.78,-7.0
+Bilbao,Athletic Club,ESP,1.0,1741.16,85.4,1703.15,38.0
+Galatasaray,Galatasaray,TUR,1.0,1740.86,88.3,1772.79,-32.0
+Burnley,Burnley,ENG,1.0,1734.79,85.2,1698.35,36.0
+Leeds,Leeds United,ENG,1.0,1732.74,85.2,1698.35,34.0
+St Gillis,Union Saint-Gilloise,BEL,1.0,1727.18,87.7,1758.39,-31.0
+Strasbourg,Strasbourg,FRA,1.0,1726.05,84.3,1676.74,49.0
+Stuttgart,Stuttgart,GER,1.0,1719.07,86.7,1734.37,-15.0
+Lens,Lens,FRA,1.0,1715.3,84.8,1688.74,27.0
+Feyenoord,Feyenoord,NED,1.0,1712.54,84.9,1691.14,21.0
+Fiorentina,Fiorentina,ITA,1.0,1710.7,83.3,1652.72,58.0
+West Ham,West Ham United,ENG,1.0,1710.39,86.1,1719.96,-10.0
+Nice,Nice,FRA,1.0,1690.35,82.2,1626.3,64.0
+Wolves,Wolverhampton Wanderers,ENG,1.0,1690.03,84.3,1676.74,13.0
+Fenerbahce,Fenerbahçe,TUR,1.0,1689.93,85.4,1703.15,-13.0
+Freiburg,Freiburg,GER,1.0,1683.51,85.3,1700.75,-17.0
+Torino,Torino,ITA,1.0,1682.59,83.1,1647.92,35.0
+Como,Como,ITA,1.0,1682.02,84.6,1683.94,-2.0
+Celta,Celta De Vigo,ESP,1.0,1680.4,84.9,1691.14,-11.0
+Werder,Werder Bremen,GER,1.0,1676.86,84.0,1669.53,7.0
+Osasuna,Osasuna,ESP,1.0,1675.29,83.5,1657.52,18.0
+Rayo Vallecano,Rayo Vallecano,ESP,1.0,1675.08,83.9,1667.13,8.0
+Slavia Praha,Slavia Praha,CZE,1.0,1673.52,84.0,1669.53,4.0
+Midtjylland,Midtjylland,DEN,1.0,1672.35,84.9,1691.14,-19.0
+Olympiakos,Olympiakos Piraeus,GRE,1.0,1672.22,85.1,1695.95,-24.0
+Braga,Sporting Braga,POR,1.0,1672.07,83.2,1650.32,22.0
+Bodoe Glimt,Bodø / Glimt,NOR,1.0,1667.87,82.9,1643.11,25.0
+Mainz,Mainz 05,GER,1.0,1667.0,83.3,1652.72,14.0
+Toulouse,Toulouse,FRA,1.0,1666.88,81.9,1619.1,48.0
+Espanyol,Espanyol,ESP,1.0,1665.47,82.8,1640.71,25.0
+Valencia,Valencia,ESP,1.0,1658.65,82.5,1633.51,25.0
+Brest,Brest,FRA,1.0,1653.72,81.4,1607.09,47.0
+Rennes,Rennes,FRA,1.0,1653.08,82.1,1623.9,29.0
+Sociedad,Real Sociedad,ESP,1.0,1649.71,83.0,1645.52,4.0
+Sevilla,Sevilla,ESP,1.0,1647.88,82.2,1626.3,22.0
+Alaves,Alavés,ESP,1.0,1643.55,82.4,1631.11,12.0
+Getafe,Getafe,ESP,1.0,1643.33,82.3,1628.71,15.0
+Mallorca,Mallorca,ESP,1.0,1638.74,81.8,1616.7,22.0
+Hoffenheim,Hoffenheim,GER,1.0,1636.92,83.3,1652.72,-16.0
+Sunderland,Sunderland,ENG,1.0,1634.46,85.8,1712.76,-78.0
+Ajax,Ajax,NED,1.0,1630.86,80.3,1580.68,50.0
+Wolfsburg,Wolfsburg,GER,1.0,1627.59,81.1,1599.89,28.0
+Coventry,Coventry City,ENG,2.0,1623.37,83.3,1652.72,-29.0
+Alkmaar,Az,NED,1.0,1622.2,82.0,1621.5,1.0
+Union Berlin,Union Berlin,GER,1.0,1619.31,81.4,1607.09,12.0
+Fc Kobenhavn,København,DEN,1.0,1616.84,81.7,1614.3,3.0
+Udinese,Udinese,ITA,1.0,1612.24,80.6,1587.88,24.0
+Sassuolo,Sassuolo,ITA,1.0,1611.18,79.5,1561.46,50.0
+Levante,Levante,ESP,1.0,1610.54,80.5,1585.48,25.0
+Elche,Elche,ESP,1.0,1609.4,81.4,1607.09,2.0
+Genoa,Genoa,ITA,1.0,1605.08,79.6,1563.87,41.0
+Genk,Genk,BEL,1.0,1602.66,82.6,1635.91,-33.0
+Augsburg,Augsburg,GER,1.0,1601.27,80.3,1580.68,21.0
+Leicester,Leicester City,ENG,2.0,1600.48,79.6,1563.87,37.0
+Paok,Paok,GRE,1.0,1600.43,81.8,1616.7,-16.0
+Sparta Praha,Sparta Praha,CZE,1.0,1599.25,79.5,1561.46,38.0
+Gladbach,Borussia M'Gladbach,GER,1.0,1598.08,81.1,1599.89,-2.0
+Auxerre,Auxerre,FRA,1.0,1597.26,78.4,1535.05,62.0
+Girona,Girona,ESP,1.0,1594.97,79.1,1551.86,43.0
+Cagliari,Cagliari,ITA,1.0,1593.96,78.8,1544.65,49.0
+Viktoria Plzen,Viktoria Plzeň,CZE,1.0,1590.91,81.2,1602.29,-11.0
+Lorient,Lorient,FRA,1.0,1589.49,77.1,1503.83,86.0
+Celtic,Celtic,SCO,1.0,1587.69,80.6,1587.88,0.0
+Parma,Parma,ITA,1.0,1586.93,78.9,1547.06,40.0
+Nantes,Nantes,FRA,1.0,1586.72,77.8,1520.64,66.0
+Koeln,Köln,GER,1.0,1583.16,81.0,1597.49,-14.0
+Leganes,Leganés,ESP,2.0,1582.03,76.0,1477.41,105.0
+Cremonese,Cremonese,ITA,1.0,1581.05,80.1,1575.87,5.0
+Ipswich,Ipswich Town,ENG,2.0,1580.32,80.5,1585.48,-5.0
+Middlesbrough,Middlesbrough,ENG,2.0,1576.95,80.2,1578.27,-1.0
+Le Havre,Le Havre,FRA,1.0,1573.04,78.0,1525.44,48.0
+Las Palmas,Las Palmas,ESP,2.0,1569.59,76.3,1484.62,85.0
+St Pauli,St. Pauli,GER,1.0,1568.95,78.1,1527.84,41.0
+Brondby,Brøndby,DEN,1.0,1567.69,79.5,1561.46,6.0
+Verona,Hellas Verona,ITA,1.0,1565.98,77.6,1515.84,50.0
+Hamburg,Hamburger Sv,GER,1.0,1565.79,79.2,1554.26,12.0
+Viking,Viking,NOR,1.0,1565.23,81.1,1599.89,-35.0
+Lecce,Lecce,ITA,1.0,1563.9,78.4,1535.05,29.0
+Reims,Reims,FRA,2.0,1562.13,72.6,1395.76,166.0
+Brann,Brann,NOR,1.0,1562.12,80.0,1573.47,-11.0
+Oviedo,Real Oviedo,ESP,1.0,1561.53,78.7,1542.25,19.0
+Bristol City,Bristol City,ENG,2.0,1559.93,79.1,1551.86,8.0
+Anderlecht,Anderlecht,BEL,1.0,1557.03,86.2,1722.36,-165.0
+Paris Fc,Paris Fc,FRA,1.0,1554.06,77.9,1523.04,31.0
+Mjaellby,Mjällby,SWE,1.0,1553.72,81.5,1609.49,-56.0
+Twente,Twente,NED,1.0,1552.88,77.9,1523.04,30.0
+Angers,Angers Sco,FRA,1.0,1551.73,77.7,1518.24,33.0
+Venezia,Venezia,ITA,2.0,1551.56,74.4,1438.99,113.0
+Millwall,Millwall,ENG,2.0,1550.8,79.2,1554.26,-3.0
+Dinamo Zagreb,Dinamo Zagreb,CRO,1.0,1549.36,81.6,1611.9,-63.0
+Guimaraes,Vitória Guimarães,POR,1.0,1549.33,78.0,1525.44,24.0
+Almeria,Almería,ESP,2.0,1548.68,76.9,1499.03,50.0
+Sheffield United,Sheffield United,ENG,2.0,1548.13,78.2,1530.25,18.0
+Famalicao,Famalicão,POR,1.0,1547.6,78.7,1542.25,5.0
+Metz,Metz,FRA,1.0,1546.47,76.4,1487.02,59.0
+Aek,Aek Athens,GRE,1.0,1545.31,78.3,1532.65,13.0
+Utrecht,Utrecht,NED,1.0,1541.51,78.1,1527.84,14.0
+Aarhus,Agf,DEN,1.0,1540.27,78.7,1542.25,-2.0
+Santander,Racing De Santander,ESP,2.0,1538.55,76.7,1494.22,44.0
+Panathinaikos,Panathinaikos,GRE,1.0,1536.79,78.9,1547.06,-10.0
+Saint-Etienne,Saint-Étienne,FRA,2.0,1535.97,73.2,1410.17,126.0
+Heidenheim,Heidenheim,GER,1.0,1535.72,77.9,1523.04,13.0
+Monza,Monza,ITA,2.0,1534.07,74.9,1451.0,83.0
+Pisa,Pisa,ITA,1.0,1531.71,78.3,1532.65,-1.0
+Elversberg,Elversberg,GER,2.0,1530.31,78.3,1532.65,-2.0
+West Brom,West Bromwich Albion,ENG,2.0,1529.9,78.2,1530.25,0.0
+Paderborn,Paderborn,GER,2.0,1529.47,78.9,1547.06,-18.0
+Southampton,Southampton,ENG,2.0,1527.91,78.4,1535.05,-7.0
+Basel,Basel,SUI,1.0,1527.74,79.8,1568.67,-41.0
+Jagiellonia,Jagiellonia Białystok,POL,1.0,1527.73,79.1,1551.86,-24.0
+Rakow,Raków Częstochowa,POL,1.0,1525.74,80.0,1573.47,-48.0
+Cadiz,Cádiz,ESP,2.0,1525.58,75.3,1460.6,65.0
+Hammarby,Hammarby,SWE,1.0,1523.63,78.9,1547.06,-23.0
+Sturm Graz,Sturm Graz,AUT,1.0,1519.19,78.7,1542.25,-23.0
+Jablonec,Jablonec,CZE,1.0,1517.66,77.4,1511.03,7.0
+Rangers,Rangers,SCO,1.0,1517.47,77.5,1513.43,4.0
+Ferencvaros,Ferencváros,HUN,1.0,1517.4,81.1,1599.89,-82.0
+Empoli,Empoli,ITA,2.0,1517.1,72.0,1381.35,136.0
+Holstein,Holstein Kiel,GER,2.0,1516.38,75.4,1463.0,53.0
+Stoke,Stoke City,ENG,2.0,1515.93,79.6,1563.87,-48.0
+Salzburg,Salzburg,AUT,1.0,1514.01,78.4,1535.05,-21.0
+Hull,Hull City,ENG,2.0,1513.08,78.3,1532.65,-20.0
+Trabzonspor,Trabzonspor,TUR,1.0,1510.55,78.3,1532.65,-22.0
+Nordsjaelland,Nordsjælland,DEN,1.0,1507.32,75.9,1475.01,32.0
+Eibar,Eibar,ESP,2.0,1507.12,74.4,1438.99,68.0
+Gil Vicente,Gil Vicente,POR,1.0,1505.32,77.4,1511.03,-6.0
+Qpr,Queens Park Rangers,ENG,2.0,1504.39,76.9,1499.03,5.0
+Lech,Lech Poznań,POL,1.0,1504.16,78.7,1542.25,-38.0
+Nijmegen,Nec,NED,1.0,1503.63,75.8,1472.61,31.0
+Preston,Preston North End,ENG,2.0,1501.51,78.9,1547.06,-46.0
+Granada,Granada,ESP,2.0,1501.26,73.9,1426.98,74.0
+Gent,Gent,BEL,1.0,1500.75,77.1,1503.83,-3.0
+Troyes,Troyes,FRA,2.0,1499.63,74.6,1443.79,56.0
+Young Boys,Young Boys,SUI,1.0,1499.6,77.5,1513.43,-14.0
+Mirandes,Mirandés,ESP,2.0,1499.49,73.9,1426.98,73.0
+Antwerp,Antwerp,BEL,1.0,1499.06,77.0,1501.43,-2.0
+Djurgarden,Djurgården,SWE,1.0,1498.31,77.4,1511.03,-13.0
+Besiktas,Beşiktaş,TUR,1.0,1497.72,77.3,1508.63,-11.0
+Depor,Deportivo De La Coruña,ESP,2.0,1496.32,75.6,1467.81,29.0
+Karlsruhe,Karlsruher Sc,GER,2.0,1495.33,76.8,1496.62,-1.0
+Go Ahead Eagles,Go Ahead Eagles,NED,1.0,1494.8,74.7,1446.19,49.0
+Mechelen,Mechelen,BEL,1.0,1493.89,77.3,1508.63,-15.0
+Burgos,Burgos,ESP,2.0,1493.81,74.7,1446.19,48.0
+Charleroi,Sporting Charleroi,BEL,1.0,1493.48,77.2,1506.23,-13.0
+Huesca,Huesca,ESP,2.0,1491.24,73.4,1414.97,76.0
+Hannover,Hannover 96,GER,2.0,1486.7,76.3,1484.62,2.0
+Bochum,Bochum,GER,2.0,1486.68,74.2,1434.19,52.0
+Frosinone,Frosinone,ITA,2.0,1486.01,74.3,1436.59,49.0
+Sparta Rotterdam,Sparta Rotterdam,NED,1.0,1485.06,74.8,1448.59,36.0
+Legia,Legia Warszawa,POL,1.0,1484.51,77.7,1518.24,-34.0
+Moreirense,Moreirense,POR,1.0,1484.46,76.5,1489.42,-5.0
+Gijon,Sporting De Gijón,ESP,2.0,1482.72,73.7,1422.18,61.0
+Charlton,Charlton Athletic,ENG,2.0,1481.71,78.3,1532.65,-51.0
+Lautern,Kaiserslautern,GER,2.0,1481.23,76.8,1496.62,-15.0
+Blackburn,Blackburn Rovers,ENG,2.0,1480.46,77.7,1518.24,-38.0
+Watford,Watford,ENG,2.0,1480.26,77.4,1511.03,-31.0
+Cordoba,Córdoba,ESP,2.0,1478.94,74.2,1434.19,45.0
+Albacete,Albacete,ESP,2.0,1478.93,73.9,1426.98,52.0
+Portsmouth,Portsmouth,ENG,2.0,1477.44,76.0,1477.41,0.0
+Montpellier,Montpellier,FRA,2.0,1477.1,71.7,1374.15,103.0
+Gornik,Górnik Zabrze,POL,1.0,1475.94,78.4,1535.05,-59.0
+Darmstadt,Darmstadt 98,GER,2.0,1475.94,76.0,1477.41,-1.0
+Samsunspor,Samsunspor,TUR,1.0,1475.77,77.7,1518.24,-42.0
+Rio Ave,Rio Ave,POR,1.0,1474.6,74.3,1436.59,38.0
+Randers,Randers,DEN,1.0,1474.22,75.0,1453.4,21.0
+Derby,Derby County,ENG,2.0,1472.49,77.8,1520.64,-48.0
+Schalke,Schalke 04,GER,2.0,1472.36,75.3,1460.6,12.0
+Valladolid,Real Valladolid,ESP,2.0,1471.89,74.3,1436.59,35.0
+Santa Clara,Santa Clara,POR,1.0,1469.62,75.0,1453.4,16.0
+Palermo,Palermo,ITA,2.0,1468.82,74.3,1436.59,32.0
+Silkeborg,Silkeborg,DEN,1.0,1467.9,74.9,1451.0,17.0
+Arouca,Arouca,POR,1.0,1467.83,73.9,1426.98,41.0
+Hertha,Hertha Bsc,GER,2.0,1466.88,75.7,1470.21,-3.0
+Spezia,Spezia,ITA,2.0,1466.48,73.0,1405.37,61.0
+Wolfsberg,Wolfsberger Ac,AUT,1.0,1465.06,76.9,1499.03,-34.0
+Oxford,Oxford United,ENG,2.0,1464.81,75.6,1467.81,-3.0
+St Truiden,Sint-Truiden,BEL,1.0,1464.61,76.6,1491.82,-27.0
+Modena,Modena,ITA,2.0,1464.11,74.6,1443.79,20.0
+Westerlo,Westerlo,BEL,1.0,1464.07,75.8,1472.61,-9.0
+Malmoe,Malmö Ff,SWE,1.0,1463.77,76.4,1487.02,-23.0
+Pogon,Pogoń Szczecin,POL,1.0,1461.15,76.3,1484.62,-23.0
+Bueyueksehir,İstanbul Başakşehir,TUR,1.0,1460.54,76.1,1479.81,-19.0
+Cesena,Cesena,ITA,2.0,1460.41,74.0,1429.38,31.0
+Ceuta,Ceuta,ESP,2.0,1457.49,73.8,1424.58,33.0
+Malaga,Málaga,ESP,2.0,1457.17,72.8,1400.56,57.0
+Castellon,Castellón,ESP,2.0,1457.0,73.3,1412.57,44.0
+Juve Stabia,Juve Stabia,ITA,2.0,1456.83,73.2,1410.17,47.0
+Cracovia,Cracovia,POL,1.0,1454.87,77.0,1501.43,-47.0
+Dunkerque,Dunkerque,FRA,2.0,1453.57,73.1,1407.77,46.0
+Catanzaro,Catanzaro,ITA,2.0,1452.86,73.4,1414.97,38.0
+Hearts,Hearts,SCO,1.0,1452.66,76.6,1491.82,-39.0
+Estoril,Estoril,POR,1.0,1452.55,75.2,1458.2,-6.0
+Duesseldorf,Fortuna Düsseldorf,GER,2.0,1452.09,74.2,1434.19,18.0
+Razgrad,Ludogorets Razgrad,BUL,1.0,1448.83,75.2,1458.2,-9.0
+Cercle Brugge,Cercle Brugge,BEL,1.0,1448.25,75.0,1453.4,-5.0
+Casa Pia,Casa Pia,POR,1.0,1446.87,73.6,1419.78,27.0
+Guingamp,Guingamp,FRA,2.0,1446.62,72.3,1388.56,58.0
+Tromso,Tromsø,NOR,1.0,1445.81,75.8,1472.61,-27.0
+Lausanne,Lausanne-Sport,SUI,1.0,1442.99,76.0,1477.41,-34.0
+Viborg,Viborg,DEN,1.0,1442.76,74.4,1438.99,4.0
+Birmingham,Birmingham City,ENG,2.0,1442.3,78.6,1539.85,-98.0
+Craiova,Universitatea Craiova,ROM,1.0,1442.13,76.5,1489.42,-47.0
+Rosenborg,Rosenborg,NOR,1.0,1442.12,74.8,1448.59,-6.0
+Annecy,Annecy,FRA,2.0,1440.31,71.4,1366.94,73.0
+Goeztepe,Göztepe,TUR,1.0,1438.76,76.4,1487.02,-48.0
+Gais,Gais,SWE,1.0,1437.22,76.4,1487.02,-50.0
+Servette,Servette,SUI,1.0,1434.63,74.6,1443.79,-9.0
+Heerenveen,Heerenveen,NED,1.0,1434.51,73.1,1407.77,27.0
+Steaua,Fcsb,ROM,1.0,1434.03,75.6,1467.81,-34.0
+Zwolle,Pec Zwolle,NED,1.0,1433.68,71.8,1376.55,57.0
+Groningen,Groningen,NED,1.0,1433.07,73.0,1405.37,28.0
+Rodez,Rodez,FRA,2.0,1432.47,70.5,1345.33,87.0
+Stgallen,St. Gallen,SUI,1.0,1432.24,74.9,1451.0,-19.0
+Sheffield Weds,Sheffield Wednesday,ENG,2.0,1432.07,74.5,1441.39,-9.0
+Carrarese,Carrarese,ITA,2.0,1431.25,71.7,1374.15,57.0
+Alanyaspor,Alanyaspor,TUR,1.0,1428.52,74.3,1436.59,-8.0
+Standard,Standard Liège,BEL,1.0,1427.78,75.2,1458.2,-30.0
+Banik Ostrava,Baník Ostrava,CZE,1.0,1427.28,72.9,1402.97,24.0
+Nacional,Nacional,POR,1.0,1426.8,73.3,1412.57,14.0
+Reggiana,Reggiana,ITA,2.0,1425.89,71.8,1376.55,49.0
+Red Star,Red Star,FRA,2.0,1425.08,71.9,1378.95,46.0
+Hradec Kralove,Hradec Králové,CZE,1.0,1422.41,73.6,1419.78,3.0
+Suedtirol,Südtirol,ITA,2.0,1422.4,71.6,1371.75,51.0
+Levski,Levski Sofia,BUL,1.0,1422.25,76.5,1489.42,-67.0
+Austria Wien,Austria Wien,AUT,1.0,1421.41,73.5,1417.38,4.0
+Molde,Molde,NOR,1.0,1420.21,74.1,1431.78,-12.0
+Slovan Liberec,Slovan Liberec,CZE,1.0,1419.93,73.8,1424.58,-5.0
+Hajduk,Hajduk Split,CRO,1.0,1419.87,78.2,1530.25,-110.0
+Korona,Korona Kielce,POL,1.0,1418.77,75.7,1470.21,-51.0
+Sampdoria,Sampadoria,ITA,2.0,1418.27,70.1,1335.72,83.0
+Kasimpasa,Kasimpaşa,TUR,1.0,1417.43,72.6,1395.76,22.0
+Nuernberg,Nürnberg,GER,2.0,1417.37,72.9,1402.97,14.0
+Sociedad B,Real Sociedad Ii,ESP,2.0,1417.35,72.3,1388.56,29.0
+Aris,Aris,GRE,1.0,1416.66,73.7,1422.18,-6.0
+Elfsborg,Elfsborg,SWE,1.0,1416.48,73.6,1419.78,-3.0
+Pau,Pau,FRA,2.0,1415.9,70.9,1354.94,61.0
+Clermont,Clermont,FRA,2.0,1415.07,69.0,1309.31,106.0
+Aik,Aik,SWE,1.0,1412.89,75.6,1467.81,-55.0
+Rapid Bucuresti,Rapid București,ROM,1.0,1412.09,75.7,1470.21,-58.0
+Sittard,Fortuna Sittard,NED,1.0,1411.5,71.7,1374.15,37.0
+Rapid Wien,Rapid,AUT,1.0,1410.91,74.1,1431.78,-21.0
+Bari,Bari,ITA,2.0,1409.69,71.6,1371.75,38.0
+Sonderjyske,Sønderjyske,DEN,1.0,1409.57,74.0,1429.38,-20.0
+Konyaspor,Konyaspor,TUR,1.0,1408.83,72.9,1402.97,6.0
+Magdeburg,Magdeburg,GER,2.0,1408.6,72.4,1390.96,18.0
+Le Mans,Le Mans,FRA,2.0,1407.5,70.8,1352.54,55.0
+Grenoble,Grenoble,FRA,2.0,1406.91,70.6,1347.73,59.0
+Goeteborg,Ifk Göteborg,SWE,1.0,1406.15,74.9,1451.0,-45.0
+Haecken,Häcken,SWE,1.0,1406.02,73.7,1422.18,-16.0
+Fredrikstad,Fredrikstad,NOR,1.0,1404.45,74.6,1443.79,-39.0
+Leuven,Oh Leuven,BEL,1.0,1402.5,73.9,1426.98,-24.0
+Laval,Laval,FRA,2.0,1402.1,69.7,1326.12,76.0
+Gaziantep Fk,Gaziantep Fk,TUR,1.0,1401.45,73.9,1426.98,-26.0
+Luzern,Luzern,SUI,1.0,1401.07,73.9,1426.98,-26.0
+Paksi,Paks,HUN,1.0,1400.88,75.7,1470.21,-69.0
+Amiens,Amiens Sc,FRA,2.0,1400.81,69.6,1323.72,77.0
+Hibernian,Hibernian,SCO,1.0,1400.31,73.9,1426.98,-27.0
+Sigma Olomouc,Sigma Olomouc,CZE,1.0,1399.61,73.8,1424.58,-25.0
+Sandefjord,Sandefjord,NOR,1.0,1397.39,72.4,1390.96,6.0
+Muenster,Preussen Münster,GER,2.0,1396.4,72.7,1398.16,-2.0
+Sarpsborg,Sarpsborg 08,NOR,1.0,1394.81,73.0,1405.37,-11.0
+Ik Sirius,Sirius,SWE,1.0,1393.93,74.0,1429.38,-35.0
+Rizespor,Rizespor,TUR,1.0,1392.58,73.1,1407.77,-15.0
+Lask,Lask,AUT,1.0,1391.63,73.3,1412.57,-21.0
+Kfum Oslo,Kfum,NOR,1.0,1391.58,72.4,1390.96,1.0
+Bastia,Bastia,FRA,2.0,1391.17,69.5,1321.32,70.0
+Rijeka,Rijeka,CRO,1.0,1390.83,76.6,1491.82,-101.0
+Alverca,Alverca,POR,1.0,1389.55,72.7,1398.16,-9.0
+Zulte Waregem,Zulte Waregem,BEL,1.0,1388.1,75.9,1475.01,-87.0
+Puskas Akademia,Puskás,HUN,1.0,1388.06,74.3,1436.59,-49.0
+Piast Gliwice,Piast Gliwice,POL,1.0,1386.62,73.5,1417.38,-31.0
+Lugano,Lugano,SUI,1.0,1386.11,74.6,1443.79,-58.0
+Nancy,Nancy,FRA,2.0,1385.53,69.7,1326.12,59.0
+Padova,Padova,ITA,2.0,1385.03,71.7,1374.15,11.0
+Radomiak,Radomiak Radom,POL,1.0,1384.61,74.3,1436.59,-52.0
+Lubin,Zagłębie Lubin,POL,1.0,1383.36,74.0,1429.38,-46.0
+Fuerth,Greuther Fürth,GER,2.0,1379.39,71.1,1359.74,20.0
+Katowice,Gks Katowice,POL,1.0,1378.4,74.6,1443.79,-65.0
+Gyoer,Győri Eto,HUN,1.0,1375.36,75.1,1455.8,-80.0
+Plock,Wisła Płock,POL,1.0,1374.48,75.3,1460.6,-86.0
+Bielefeld,Arminia Bielefeld,GER,2.0,1373.97,73.6,1419.78,-46.0
+Zuerich,Zürich,SUI,1.0,1373.24,72.2,1386.16,-13.0
+Estrela Amadora,Estrela,POR,1.0,1371.94,71.1,1359.74,12.0
+Levadeiakos,Levadiakos,GRE,1.0,1369.58,73.0,1405.37,-36.0
+Avellino,Avellino,ITA,2.0,1368.72,71.2,1362.14,7.0
+Tondela,Tondela,POR,1.0,1367.96,71.9,1378.95,-11.0
+Thun,Thun,SUI,1.0,1367.89,74.9,1451.0,-83.0
+Sion,Sion,SUI,1.0,1367.79,72.8,1400.56,-33.0
+Ham-Kam,Hamkam,NOR,1.0,1365.26,72.4,1390.96,-26.0
+Cfr Cluj,Cfr Cluj,ROM,1.0,1363.87,72.7,1398.16,-34.0
+Pescara,Pescara,ITA,2.0,1362.1,69.3,1316.51,46.0
+Widzew,Widzew Łódź,POL,1.0,1361.46,73.0,1405.37,-44.0
+Eyupspor,Eyüpspor,TUR,1.0,1361.32,71.1,1359.74,2.0
+Kayseri,Kayserispor,TUR,1.0,1360.98,71.3,1364.54,-4.0
+Bohemians Praha,Bohemians 1905,CZE,1.0,1359.46,70.5,1345.33,14.0
+Hartberg,Hartberg,AUT,1.0,1359.21,72.8,1400.56,-41.0
+Braunschweig,Eintracht Braunschweig,GER,2.0,1358.8,70.5,1345.33,13.0
+Raal,Raal La Louvière,BEL,1.0,1358.51,74.9,1451.0,-92.0
+Valerenga,Vålerenga,NOR,1.0,1358.5,73.1,1407.77,-49.0
+Odense,Ob,DEN,1.0,1358.47,72.5,1393.36,-35.0
+Entella,Virtus Entella,ITA,2.0,1355.11,70.8,1352.54,3.0
+Motor Lublin,Motor Lublin,POL,1.0,1354.84,73.3,1412.57,-58.0
+Dender,Dender,BEL,1.0,1354.54,71.3,1364.54,-10.0
+Mantova,Mantova,ITA,2.0,1353.82,68.8,1304.51,49.0
+Boulogne,Boulogne,FRA,2.0,1352.97,67.8,1280.49,72.0
+Karvina,Karviná,CZE,1.0,1352.86,71.8,1376.55,-24.0
+Lechia,Lechia Gdańsk,POL,1.0,1352.45,72.7,1398.16,-46.0
+Heracles,Heracles,NED,1.0,1350.73,70.4,1342.93,8.0
+Istra 1961,Istra 1961,CRO,1.0,1349.55,74.4,1438.99,-89.0
+Botosani,Botoșani,ROM,1.0,1349.36,73.2,1410.17,-61.0
+Volendam,Volendam,NED,1.0,1349.26,69.2,1314.11,35.0
+Atromitos,Atromitos,GRE,1.0,1347.09,70.3,1340.53,7.0
+Kocaelispor,Kocaelispor,TUR,1.0,1347.08,71.9,1378.95,-32.0
+Breda,Nac Breda,NED,1.0,1346.57,68.7,1302.1,44.0
+Vejle,Vejle,DEN,1.0,1342.56,69.8,1328.52,14.0
+Fredericia,Fredericia,DEN,1.0,1341.21,71.2,1362.14,-21.0
+Lok Zagreb,Lokomotiva Zagreb,CRO,1.0,1340.78,73.2,1410.17,-69.0
+Dinamo Bucuresti,Dinamo București,ROM,1.0,1339.67,73.1,1407.77,-68.0
+Grasshoppers,Grasshoppers,SUI,1.0,1339.63,70.8,1352.54,-13.0
+Dresden,Dynamo Dresden,GER,2.0,1339.58,71.3,1364.54,-25.0
+Antalyaspor,Antalyaspor,TUR,1.0,1338.98,70.5,1345.33,-6.0
+Excelsior,Excelsior,NED,1.0,1338.03,69.0,1309.31,29.0
+Cska Sofia,Cska Sofia,BUL,1.0,1333.69,71.7,1374.15,-40.0
+Universitatea Cluj,Universitatea Cluj,ROM,1.0,1333.33,72.0,1381.35,-48.0
+Teplice,Teplice,CZE,1.0,1333.03,69.6,1323.72,9.0
+Telstar,Telstar,NED,1.0,1330.49,67.6,1275.69,55.0
+Genclerbirligi,Gençlerbirliği,TUR,1.0,1329.56,71.2,1362.14,-33.0
+St Mirren,St. Mirren,SCO,1.0,1328.56,70.2,1338.13,-10.0
+Osijek,Osijek,CRO,1.0,1328.23,73.3,1412.57,-84.0
+Kristiansund,Kristiansund,NOR,1.0,1327.89,70.2,1338.13,-10.0
+Mlada Boleslav,Mladá Boleslav,CZE,1.0,1325.34,68.2,1290.1,35.0
+Viitorul,Fcv Farul Constanța,ROM,1.0,1323.86,72.2,1386.16,-62.0
+Varazdin,Varaždin,CRO,1.0,1322.77,73.9,1426.98,-104.0
+Arka,Arka Gdynia,POL,1.0,1322.5,72.3,1388.56,-66.0
+Brommapojkarna,Brommapojkarna,SWE,1.0,1320.09,70.8,1352.54,-32.0
+Cherno More,Cherno More Varna,BUL,1.0,1318.94,71.4,1366.94,-48.0
+Debrecen,Debrecen,HUN,1.0,1317.0,72.9,1402.97,-86.0
+Tescoma Zlin,Zlín,CZE,1.0,1314.85,72.0,1381.35,-66.0
+Avs Futebol,Avs,POR,1.0,1314.42,68.0,1285.29,29.0
+Motherwell,Motherwell,SCO,1.0,1311.75,69.2,1314.11,-2.0
+Norrkoeping,Norrköping,SWE,1.0,1310.3,69.6,1323.72,-13.0
+Slaven Belupo,Slaven Koprivnica,CRO,1.0,1310.25,73.9,1426.98,-117.0
+Otelul Galati,Oțelul Galați,ROM,1.0,1309.82,71.9,1378.95,-69.0
+Nieciecza,Nieciecza,POL,1.0,1309.81,70.8,1352.54,-43.0
+Stromsgodset,Strømsgodset,NOR,1.0,1306.39,68.9,1306.91,-1.0
+Bryne,Bryne,NOR,1.0,1306.36,70.3,1340.53,-34.0
+Mtk,Mtk,HUN,1.0,1305.83,71.5,1369.35,-64.0
+Nfc Volos,Volos Nfc,GRE,1.0,1300.38,69.9,1330.92,-31.0
+Kilmarnock,Kilmarnock,SCO,1.0,1299.76,68.7,1302.1,-2.0
+Panetolikos,Panaitolikos,GRE,1.0,1299.33,68.7,1302.1,-3.0
+Dundee United,Dundee United,SCO,1.0,1299.23,69.6,1323.72,-24.0
+Slovacko,Slovácko,CZE,1.0,1298.84,67.2,1266.08,33.0
+Fatih Karaguemruek,Fatih Karagümrük,TUR,1.0,1297.93,69.0,1309.31,-11.0
+Bw Linz,Blau-Weiss Linz,AUT,1.0,1297.33,68.6,1299.7,-2.0
+Asteras Tripolis,Asteras Tripolis,GRE,1.0,1292.39,68.4,1294.9,-3.0
+Dukla,Dukla Praha,CZE,1.0,1289.39,68.6,1299.7,-10.0
+Halmstad,Halmstad,SWE,1.0,1288.43,69.4,1318.91,-30.0
+Winterthur,Winterthur,SUI,1.0,1287.64,69.1,1311.71,-24.0
+Altach,Rheindorf Altach,AUT,1.0,1286.61,67.6,1275.69,11.0
+Aberdeen,Aberdeen,SCO,1.0,1286.49,68.9,1306.91,-20.0
+Ofi,Ofi,GRE,1.0,1286.23,67.1,1263.68,23.0
+Ried,Ried,AUT,1.0,1284.8,68.2,1290.1,-5.0
+Zalaegerszegi,Zalaegerszeg,HUN,1.0,1281.15,69.1,1311.71,-31.0
+Aarau,Aarau,SUI,1.0,1278.32,69.4,1318.91,-41.0
+Diosgyori,Diósgyőr,HUN,1.0,1276.3,69.8,1328.52,-52.0
+Wattens,Wsg Tirol,AUT,1.0,1276.17,68.6,1299.7,-24.0
+Pardubice,Pardubice,CZE,1.0,1276.16,66.8,1256.48,20.0
+Varnamo,Värnamo,SWE,1.0,1270.77,67.4,1270.88,0.0
+Hermannstadt,Hermannstadt,ROM,1.0,1270.31,68.4,1294.9,-25.0
+Hnk Gorica,Hnk Gorica,CRO,1.0,1268.11,70.8,1352.54,-84.0
+Cska 1948 Sofia,Cska 1948 Sofia,BUL,1.0,1267.93,69.2,1314.11,-46.0
+Uta Arad,Uta Arad,ROM,1.0,1264.65,69.4,1318.91,-54.0
+Oester,Öster,SWE,1.0,1261.03,70.0,1333.32,-72.0
+Kisvarda,Kisvárda,HUN,1.0,1257.61,70.8,1352.54,-95.0
+Dundee,Dundee,SCO,1.0,1255.94,66.7,1254.07,2.0
+Degerfors,Degerfors,SWE,1.0,1255.29,69.6,1323.72,-68.0
+Arges Pitesti,Argeș,ROM,1.0,1250.32,72.3,1388.56,-138.0
+Kifisias,Kifisia,GRE,1.0,1250.3,69.1,1311.71,-61.0
+Ujpest,Újpest,HUN,1.0,1249.05,70.5,1345.33,-96.0
+Petrolul Ploiesti,Petrolul 52,ROM,1.0,1247.82,68.7,1302.1,-54.0
+Unirea Slobozia,Unirea Slobozia,ROM,1.0,1240.21,68.7,1302.1,-62.0
+Larisa,Larissa,GRE,1.0,1237.67,67.3,1268.48,-31.0
+Gak,Grazer Ak,AUT,1.0,1236.77,66.7,1254.07,-17.0
+Panserraikos,Panserraikos,GRE,1.0,1235.78,65.3,1220.45,15.0
+Arda,Arda Kardzhali,BUL,1.0,1229.86,66.9,1258.88,-29.0
+Kazincbarcika,Kazincbarcika,HUN,1.0,1224.71,68.8,1304.51,-80.0
+Csikszereda,Csikszereda,ROM,1.0,1224.21,67.8,1280.49,-56.0
+Nyiregyhaza,Nyíregyháza Spartacus,HUN,1.0,1222.18,68.2,1290.1,-68.0
+Lok Plovdiv,Lokomotiv Plovdiv,BUL,1.0,1215.61,66.7,1254.07,-38.0
+Haugesund,Haugesund,NOR,1.0,1212.86,65.8,1232.46,-20.0
+Falkirk,Falkirk,SCO,1.0,1209.44,68.6,1299.7,-90.0
+,Admira Wacker,AUT,,,64.9,1210.85,
+,St. Pölten,AUT,,,64.3,1196.44,
+,Floridsdorfer Ac,AUT,,,62.3,1148.41,
+,Austria Lustenau,AUT,,,61.9,1138.8,
+,Liefering,AUT,,,61.1,1119.59,
+,Austria Klagenfurt,AUT,,,61.0,1117.19,
+,Amstetten,AUT,,,61.0,1117.19,
+,First Vienna,AUT,,,59.9,1090.77,
+,Kapfenberger Sv,AUT,,,59.7,1085.97,
+,Austria Salzburg,AUT,,,58.3,1052.35,
+,Austria Wien Ii,AUT,,,57.5,1033.14,
+,Stripfing,AUT,,,57.2,1025.93,
+,Voitsberg,AUT,,,57.2,1025.93,
+,Imst,AUT,,,56.9,1018.73,
+,Rapid Wien Ii,AUT,,,56.5,1009.12,
+,Sturm Graz Ii,AUT,,,56.1,999.52,
+,Wspg Wels,AUT,,,55.5,985.11,
+,Schwarz-Weiss Bregenz,AUT,,,55.5,985.11,
+,Beveren,BEL,,,72.3,1388.56,
+,Kortrijk,BEL,,,71.6,1371.75,
+,Beerschot,BEL,,,70.7,1350.13,
+,Rwdm,BEL,,,70.3,1340.53,
+,Patro Eisden,BEL,,,68.4,1294.9,
+,Lièce,BEL,,,66.6,1251.67,
+,Deinze,BEL,,,65.9,1234.86,
+,Eupen,BEL,,,65.6,1227.66,
+,Lommel,BEL,,,65.5,1225.26,
+,Lokeren,BEL,,,64.0,1189.23,
+,Gent Ii,BEL,,,63.9,1186.83,
+,Rwdm Brussels,BEL,,,63.8,1184.43,
+,Lierse Sk,BEL,,,63.5,1177.23,
+,Tubize-Braine,BEL,,,62.6,1155.61,
+,Club Brugge Ii,BEL,,,62.1,1143.61,
+,Anderlecht Ii,BEL,,,61.2,1121.99,
+,Francs Borains,BEL,,,61.1,1119.59,
+,Raec Mons,BEL,,,61.0,1117.19,
+,Olympic Charleroi,BEL,,,60.0,1093.17,
+,Sporting Hasselt,BEL,,,59.7,1085.97,
+,Seraing,BEL,,,59.6,1083.57,
+,Krc Genk Ii,BEL,,,58.9,1066.76,
+,Thes Sport,BEL,,,58.6,1059.55,
+,Dunav Ot Ruse,BUL,,,57.2,1025.93,
+,Vantra 2019,BUL,,,54.2,953.89,
+,Fratria,BUL,,,53.2,929.87,
+,Cska Sofia Ii,BUL,,,52.1,903.46,
+,Cska 1948 Sofia Ii,BUL,,,51.6,891.45,
+,Lokomotiv Go,BUL,,,51.5,889.05,
+,Marek,BUL,,,51.0,877.04,
+,Etar Vt,BUL,,,50.5,865.03,
+,Vihren Sandanski,BUL,,,50.4,862.63,
+,Ludogorets Ii,BUL,,,49.5,841.02,
+,Chernomorets Burgas,BUL,,,49.3,836.22,
+,Orijent 1919,CRO,,,65.1,1215.65,
+,Sesvete,CRO,,,62.7,1158.02,
+,Rudeš,CRO,,,62.7,1158.02,
+,Cibalia,CRO,,,62.3,1148.41,
+,Bijelo Brdo,CRO,,,62.3,1148.41,
+,Karlovac 1919,CRO,,,62.1,1143.61,
+,Opatija,CRO,,,61.4,1126.8,
+,Dubrava Zagreb,CRO,,,61.0,1117.19,
+,Dugopolje,CRO,,,60.6,1107.58,
+,Hrvace,CRO,,,60.1,1095.58,
+,Jarun,CRO,,,59.9,1090.77,
+,Croatia Zmijavci,CRO,,,59.6,1083.57,
+,Zrinski Osiječko,CRO,,,58.0,1045.15,
+,Mladost Ždralovai,CRO,,,54.1,951.49,
+,Kustošija,CRO,,,52.5,913.06,
+,Jadran Lp,CRO,,,51.9,898.65,
+,Solin,CRO,,,50.2,857.83,
+,Radnik Križevci,CRO,,,50.2,857.83,
+,Hnk Zadar,CRO,,,47.9,802.6,
+,Zagora,CRO,,,47.8,800.19,
+,Zbrojovka Brno,CZE,,,67.3,1268.48,
+,Táborsko,CZE,,,66.9,1258.88,
+,Artis Brno,CZE,,,64.8,1208.45,
+,Vyškov,CZE,,,64.4,1198.84,
+,Opava,CZE,,,63.7,1182.03,
+,Slavia Praha Ii,CZE,,,63.3,1172.42,
+,České Budějovice,CZE,,,62.2,1146.01,
+,Ústí Nad Labem,CZE,,,62.2,1146.01,
+,Viktoria Žižkov,CZE,,,61.5,1129.2,
+,Baník Ostrava Ii,CZE,,,61.5,1129.2,
+,Chrudim,CZE,,,61.3,1124.39,
+,Vysočina Jihlava,CZE,,,60.7,1109.99,
+,Příbram,CZE,,,60.6,1107.58,
+,Třinec,CZE,,,60.2,1097.98,
+,Lyngby,DEN,,,64.4,1198.84,
+,Hillerød,DEN,,,63.5,1177.23,
+,Kolding,DEN,,,63.0,1165.22,
+,Aab,DEN,,,62.9,1162.82,
+,Hvidovre,DEN,,,62.4,1150.81,
+,Horsens,DEN,,,61.8,1136.4,
+,Esbjerg,DEN,,,60.3,1100.38,
+,Aarhus Fremad,DEN,,,59.1,1071.56,
+,B 93,DEN,,,58.4,1054.75,
+,Hobro,DEN,,,58.0,1045.15,
+,Hb Køge,DEN,,,57.0,1021.13,
+,Ab,DEN,,,56.8,1016.33,
+,Middelfart,DEN,,,55.5,985.11,
+,Roskilde,DEN,,,54.9,970.7,
+,Vendsyssel,DEN,,,53.8,944.28,
+,Thisted,DEN,,,52.6,915.47,
+,Næstved,DEN,,,52.3,908.26,
+,Fremad Amager,DEN,,,51.2,881.84,
+,Stockport County,ENG,,,76.5,1489.42,
+,Norwich City,ENG,,,75.5,1465.4,
+,Lincoln City,ENG,,,73.9,1426.98,
+,Cultural Leonesas,ESP,,,72.6,1395.76,
+,Tenerife,ESP,,,71.3,1364.54,
+,Atlético Madrileño,ESP,,,70.8,1352.54,
+,Real Madrid Ii,ESP,,,70.4,1342.93,
+,Ponferradina,ESP,,,70.4,1342.93,
+,Rouen,FRA,,,68.3,1292.5,
+,Dijon,FRA,,,68.3,1292.5,
+,Martigues,FRA,,,68.2,1290.1,
+,Verl,GER,,,70.2,1338.13,
+,Energie Cottbus,GER,,,70.0,1333.32,
+,Rot-Weiss Essen,GER,,,69.8,1328.52,
+,Kalamata,GRE,,,62.7,1158.02,
+,Iraklis 1908,GRE,,,61.3,1124.39,
+,Panionios,GRE,,,58.8,1064.36,
+,Athens Kallithea,GRE,,,57.0,1021.13,
+,Niki Volos,GRE,,,56.6,1011.52,
+,Olympiakos Piraeus Ii,GRE,,,54.9,970.7,
+,Pas Giannina,GRE,,,54.1,951.49,
+,Paok Ii,GRE,,,53.9,946.68,
+,Chania,GRE,,,53.7,941.88,
+,Asteras Tripolis Ii,GRE,,,53.5,937.08,
+,Anagennisi Karditsas,GRE,,,53.4,934.68,
+,Marko,GRE,,,52.0,901.06,
+,Egaleo,GRE,,,51.8,896.25,
+,Ellas Syros,GRE,,,51.4,886.65,
+,Kavala,GRE,,,51.3,884.25,
+,Nestos Chrisoupolis,GRE,,,51.2,881.84,
+,Vasas,HUN,,,65.7,1230.06,
+,Honvéd,HUN,,,63.7,1182.03,
+,Mezőkövesd,HUN,,,63.3,1172.42,
+,Kecskemét,HUN,,,62.9,1162.82,
+,Szeged-Csanád,HUN,,,62.5,1153.21,
+,Fehérvár,HUN,,,61.0,1117.19,
+,Csákvári Tk,HUN,,,60.9,1114.79,
+,Kozármisleny,HUN,,,60.4,1102.78,
+,Karcgag,HUN,,,60.4,1102.78,
+,Szentlőrinc Se,HUN,,,59.7,1085.97,
+,Soroksár Sc,HUN,,,59.3,1076.36,
+,Tiszakécske,HUN,,,58.6,1059.55,
+,Ajka,HUN,,,58.2,1049.95,
+,Bvsc Zugló,HUN,,,58.1,1047.55,
+,Nagykanizsa,HUN,,,57.8,1040.34,
+,Békéscsaba,HUN,,,57.6,1035.54,
+,Budafoki Mte,HUN,,,57.6,1035.54,
+,Gyirmót,HUN,,,57.3,1028.33,
+,Brescia,ITA,,,71.7,1374.15,
+,Vicenza,ITA,,,69.1,1311.71,
+,Arezzo,ITA,,,66.9,1258.88,
+,Catania,ITA,,,66.2,1242.07,
+,Ado Den Haag,NED,,,69.6,1323.72,
+,Cambuur,NED,,,66.4,1246.87,
+,Rkc Waalwijk,NED,,,65.6,1227.66,
+,Willem Ii,NED,,,64.4,1198.84,
+,De Graafschap,NED,,,63.7,1182.03,
+,Dordrecht,NED,,,63.6,1179.63,
+,Roda Jc,NED,,,62.9,1162.82,
+,Almere City,NED,,,62.8,1160.42,
+,Vitesse,NED,,,62.3,1148.41,
+,Quick Boys,NED,,,62.2,1146.01,
+,Az Ii,NED,,,61.4,1126.8,
+,Den Bosch,NED,,,61.1,1119.59,
+,Emmen,NED,,,60.4,1102.78,
+,Psv Ii,NED,,,60.0,1093.17,
+,Helmond Sport,NED,,,59.8,1088.37,
+,Vvv,NED,,,59.3,1076.36,
+,Mvv,NED,,,58.6,1059.55,
+,Eindhoven,NED,,,58.6,1059.55,
+,Almere City Ii,NED,,,58.5,1057.15,
+,Afc,NED,,,57.8,1040.34,
+,Spakenburg,NED,,,57.8,1040.34,
+,Aalesund,NOR,,,66.9,1258.88,
+,Kongsvinger,NOR,,,66.7,1254.07,
+,Lyn,NOR,,,66.3,1244.47,
+,Start,NOR,,,65.6,1227.66,
+,Egersund,NOR,,,65.5,1225.26,
+,Ranheim,NOR,,,63.7,1182.03,
+,Sogndal,NOR,,,63.7,1182.03,
+,Strømmen,NOR,,,62.7,1158.02,
+,Stabæk,NOR,,,62.1,1143.61,
+,Tromsdalen,NOR,,,60.9,1114.79,
+,Moss,NOR,,,60.8,1112.39,
+,Grorud,NOR,,,60.6,1107.58,
+,Wisła Kraków,POL,,,71.6,1371.75,
+,Polonia Warszawa,POL,,,64.6,1203.64,
+,Miedź Legnica,POL,,,64.6,1203.64,
+,Polonia Bytom,POL,,,63.4,1174.83,
+,Pogoń Grodzisk Maz.,POL,,,63.1,1167.62,
+,Chrobry Głogów,POL,,,63.0,1165.22,
+,Wieczysta Kraków,POL,,,63.0,1165.22,
+,Pogoń Siedlce,POL,,,62.8,1160.42,
+,Tychy,POL,,,62.0,1141.2,
+,Górnik Łęczna,POL,,,61.5,1129.2,
+,Odra Opole,POL,,,61.3,1124.39,
+,Stal Rzeszów,POL,,,61.2,1121.99,
+,Znicz Pruszków,POL,,,60.8,1112.39,
+,Kotwica Kołobrzeg,POL,,,60.0,1093.17,
+,Unia Skierniewice,POL,,,58.6,1059.55,
+,Olimpia Grudziądz,POL,,,58.6,1059.55,
+,Chojniczanka Chojnice,POL,,,58.3,1052.35,
+,Stal Stalowa Wola,POL,,,58.1,1047.55,
+,Legia Warszawa Ii,POL,,,58.0,1045.15,
+,Resovia Rzeszów,POL,,,57.5,1033.14,
+,Świt Szczecin,POL,,,57.0,1021.13,
+,Barycz Sułów,POL,,,57.0,1021.13,
+,Podbeskidzie,POL,,,56.7,1013.93,
+,Podhale Nowy Targ,POL,,,56.6,1011.52,
+,Śląsk Wrocław Ii,POL,,,56.2,1001.92,
+,Avia Świdnik,POL,,,56.0,997.12,
+,Sokół Kleczew,POL,,,56.0,997.12,
+,Łomża,POL,,,55.8,992.31,
+,Zagłębie Sosnowiec,POL,,,55.8,992.31,
+,Sandecja Nowy Sącz,POL,,,55.6,987.51,
+,Zawisza Bydgoszcz,POL,,,55.5,985.11,
+,Rekord Bielsko-Biała,POL,,,55.4,982.71,
+,Hutnik Kraków,POL,,,55.1,975.5,
+,Kalisz,POL,,,55.1,975.5,
+,Lechia Zielona Góra,POL,,,54.7,965.9,
+,Górnik Polkowice,POL,,,54.5,961.09,
+,Kluczbork,POL,,,54.3,956.29,
+,Goczałkowice Zdrój,POL,,,54.3,956.29,
+,Siarka Tarnobrzeg,POL,,,54.1,951.49,
+,Lech Poznań Ii,POL,,,54.1,951.49,
+,Warta Sieradz,POL,,,53.9,946.68,
+,Wisła Puławy,POL,,,53.8,944.28,
+,Kszo 1929,POL,,,53.6,939.48,
+,Zagłębie Lubin Ii,POL,,,53.4,934.68,
+,Carina Gubin,POL,,,53.3,932.28,
+,Ząbkowia Ząbki,POL,,,53.2,929.87,
+,Jastrzębie,POL,,,52.8,920.27,
+,Elana Toruń,POL,,,52.7,917.87,
+,Sparta Katowice,POL,,,52.7,917.87,
+,Błękitni Stargard,POL,,,52.6,915.47,
+,Łks Łódź Ii,POL,,,52.6,915.47,
+,Polonia Środa Wlkp.,POL,,,52.5,913.06,
+,Skra Częstochowa,POL,,,52.5,913.06,
+,Chełmianka Chełm,POL,,,52.1,903.46,
+,Star Starachowice,POL,,,51.9,898.65,
+,Ruch Zdzieszowice,POL,,,51.9,898.65,
+,Podlasie Biała Podlaska,POL,,,51.6,891.45,
+,Mazovia Mińsk Mazowiecki,POL,,,51.4,886.65,
+,Warta Gorzów,POL,,,51.1,879.44,
+,Jarosław,POL,,,51.1,879.44,
+,Wigry Suwałki,POL,,,50.9,874.64,
+,Chemik Bydgoszcz,POL,,,50.8,872.24,
+,Wiślanie Skawina,POL,,,50.7,869.84,
+,Olimpia Zambrów,POL,,,50.7,869.84,
+,Korona Kielce Ii,POL,,,50.7,869.84,
+,Bałtyk Koszalin,POL,,,50.7,869.84,
+,Luzino,POL,,,50.5,865.03,
+,Cartusia Kartuzy,POL,,,50.4,862.63,
+,Świt,POL,,,50.2,857.83,
+,Pogoń-Sokół Lubaczów,POL,,,50.1,855.43,
+,Olimpia Elbląg,POL,,,50.1,855.43,
+,Górnik Zabrze Ii,POL,,,50.1,855.43,
+,Hutnik Warszawa,POL,,,50.0,853.03,
+,Flota Świnoujście,POL,,,49.9,850.63,
+,Broń Radom,POL,,,49.9,850.63,
+,Orzeł Ryczów,POL,,,49.9,850.63,
+,Wisła Płock Ii,POL,,,49.7,845.82,
+,Lechia Tomaszów Maz.,POL,,,49.7,845.82,
+,Pogoń Szczecin Ii,POL,,,49.7,845.82,
+,Unia Swarzędz,POL,,,49.6,843.42,
+,Raków Częstochowa Ii,POL,,,49.6,843.42,
+,Grom Nowy Staw,POL,,,49.5,841.02,
+,Karkonosze Jelenia Góra,POL,,,49.4,838.62,
+,Noteć Czarnków,POL,,,49.2,833.81,
+,Wisłoka Dębica,POL,,,49.0,829.01,
+,Stal Kraśnik,POL,,,48.9,826.61,
+,Polonia Nysa,POL,,,48.9,826.61,
+,Widzew Łódź Ii,POL,,,48.8,824.21,
+,Cosmos Nowotaniec,POL,,,48.8,824.21,
+,Drama Zbrosławice,POL,,,48.8,824.21,
+,Kotwica Kórnik,POL,,,48.8,824.21,
+,Gedania Gdańsk,POL,,,48.7,821.81,
+,Odra Bytom Odrański,POL,,,48.7,821.81,
+,Kts Weszło,POL,,,48.7,821.81,
+,Czarni Połaniec,POL,,,48.6,819.41,
+,Biali Sadów,POL,,,48.6,819.41,
+,Troszyn,POL,,,48.6,819.41,
+,Pogoń Nowe Skalmierzyce,POL,,,48.5,817.0,
+,Ruch Wysokie Mazowieckie,POL,,,48.5,817.0,
+,Piast Żmigród,POL,,,48.5,817.0,
+,Row Rybnik,POL,,,48.4,814.6,
+,Hetman Zamość,POL,,,48.3,812.2,
+,Radomsko,POL,,,48.3,812.2,
+,Miedź Legnica Ii,POL,,,48.3,812.2,
+,Jagiellonia Ii,POL,,,48.3,812.2,
+,Małapaniew Ozimek,POL,,,48.3,812.2,
+,Kłuczevia Stargard,POL,,,48.1,807.4,
+,Ślęza Wrocław,POL,,,48.1,807.4,
+,Łada Biłgoraj,POL,,,48.1,807.4,
+,Słowianin Wolibórz,POL,,,48.1,807.4,
+,Bełchatów,POL,,,48.1,807.4,
+,Wda Świecie,POL,,,48.1,807.4,
+,Pogoń Mogilno,POL,,,48.0,805.0,
+,Busko-Zdrój,POL,,,48.0,805.0,
+,Tomasovia Tomaszów,POL,,,47.9,802.6,
+,Podlesianka,POL,,,47.8,800.19,
+,Igloopol Dębica,POL,,,47.7,797.79,
+,Cracovia Kraków Ii,POL,,,47.6,795.39,
+,Izolator Boguchwała,POL,,,47.5,792.99,
+,Mieszko Gniezno,POL,,,47.5,792.99,
+,Vizela,POR,,,70.8,1352.54,
+,Torreense,POR,,,69.8,1328.52,
+,Boavista,POR,,,69.7,1326.12,
+,União De Leiria,POR,,,69.1,1311.71,
+,Chaves,POR,,,69.1,1311.71,
+,Marítimo,POR,,,68.8,1304.51,
+,Farense,POR,,,68.3,1292.5,
+,Académico Viseu,POR,,,68.1,1287.7,
+,Benfica Ii,POR,,,68.1,1287.7,
+,Sporting Cp Ii,POR,,,68.1,1287.7,
+,Felgueiras 1932,POR,,,67.2,1266.08,
+,Penafiel,POR,,,66.3,1244.47,
+,Feirense,POR,,,65.9,1234.86,
+,Paços De Ferreira,POR,,,65.5,1225.26,
+,Lusitania Lourosa,POR,,,65.2,1218.05,
+,Portimonense,POR,,,64.5,1201.24,
+,Leixões,POR,,,64.5,1201.24,
+,Mafra,POR,,,63.9,1186.83,
+,Sporting Braga Ii,POR,,,63.9,1186.83,
+,Porto Ii,POR,,,63.8,1184.43,
+,Varzim,POR,,,63.5,1177.23,
+,Corvinul Hunedoara,ROM,,,66.1,1239.67,
+,Csa Steaua București,ROM,,,64.6,1203.64,
+,Voluntari,ROM,,,64.1,1191.64,
+,As Fc Buzău,ROM,,,64.0,1189.23,
+,Sepsi,ROM,,,63.7,1182.03,
+,Csm Reșița,ROM,,,62.6,1155.61,
+,Politehnica Iași,ROM,,,62.1,1143.61,
+,Bihor Oradea,ROM,,,61.2,1121.99,
+,Metalul Buzău,ROM,,,61.1,1119.59,
+,Chindia Târgoviște,ROM,,,61.0,1117.19,
+,Slatina,ROM,,,60.2,1097.98,
+,Concordia Chiajna,ROM,,,59.9,1090.77,
+,Asa Târgu Mureș,ROM,,,58.7,1061.96,
+,Ceahlăul Piatra Neamț,ROM,,,58.1,1047.55,
+,1599 Șelimbăr,ROM,,,58.1,1047.55,
+,Afumați,ROM,,,58.0,1045.15,
+,Unirea Ungheni,ROM,,,56.6,1011.52,
+,Cs Dinamo București,ROM,,,56.4,1006.72,
+,Gloria Bistrița,ROM,,,56.3,1004.32,
+,Fc Bacău,ROM,,,56.2,1001.92,
+,Mioveni,ROM,,,56.1,999.52,
+,Dumbrăvița,ROM,,,55.4,982.71,
+,Focșani,ROM,,,55.0,973.1,
+,St. Johnstone,SCO,,,64.4,1198.84,
+,Partick Thistle,SCO,,,63.4,1174.83,
+,Ayr United,SCO,,,61.7,1134.0,
+,Raith Rovers,SCO,,,60.5,1105.18,
+,Ross County,SCO,,,59.6,1083.57,
+,Greenock Morton,SCO,,,59.1,1071.56,
+,Dunfermline Athletic,SCO,,,58.9,1066.76,
+,Arbroath,SCO,,,58.5,1057.15,
+,Queen'S Park,SCO,,,55.2,977.9,
+,Inverness Ct,SCO,,,55.1,975.5,
+,Airdrieonians,SCO,,,55.0,973.1,
+,Hamilton Academical,SCO,,,53.7,941.88,
+,Alloa Athletic,SCO,,,52.2,905.86,
+,Stenhousemuir,SCO,,,51.8,896.25,
+,Queen Of The South,SCO,,,50.5,865.03,
+,Celje,SLO,,,79.3,1556.66,
+,Maribor,SLO,,,73.7,1422.18,
+,Koper,SLO,,,72.3,1388.56,
+,Bravo,SLO,,,71.0,1357.34,
+,Olimpija,SLO,,,70.9,1354.94,
+,Aluminij,SLO,,,65.8,1232.46,
+,Radomlje,SLO,,,65.8,1232.46,
+,Primorje,SLO,,,65.4,1222.86,
+,Mura,SLO,,,65.1,1215.65,
+,Domžale,SLO,,,63.2,1170.02,
+,Brinje Grosuplje,SLO,,,62.7,1158.02,
+,Nafta,SLO,,,62.3,1148.41,
+,Triglav,SLO,,,61.2,1121.99,
+,Tabor Sežana,SLO,,,59.7,1085.97,
+,Bistrica,SLO,,,58.3,1052.35,
+,Beltinci,SLO,,,57.2,1025.93,
+,Gorica,SLO,,,55.3,980.31,
+,Dravinja,SLO,,,54.5,961.09,
+,Bilje,SLO,,,54.2,953.89,
+,Rudar Velenje,SLO,,,53.5,937.08,
+,Krka,SLO,,,53.2,929.87,
+,Slovan Ljubljana,SLO,,,52.4,910.66,
+,Dekani,SLO,,,51.6,891.45,
+,Ilirija Ljubljana,SLO,,,50.5,865.03,
+,Dob,SLO,,,50.4,862.63,
+,Krško Posavje,SLO,,,50.1,855.43,
+,Crvena Zvezda,SRB,,,81.7,1614.3,
+,Partizan,SRB,,,74.8,1448.59,
+,Vojvodina,SRB,,,70.0,1333.32,
+,Novi Pazar,SRB,,,67.7,1278.09,
+,Čukarički,SRB,,,66.3,1244.47,
+,Radnički Kragujevac,SRB,,,66.3,1244.47,
+,Ofk Beograd,SRB,,,65.8,1232.46,
+,Železničar Pančevo,SRB,,,65.7,1230.06,
+,Tsc,SRB,,,65.7,1230.06,
+,Imt Novi Beograd,SRB,,,64.3,1196.44,
+,Mladost Lučani,SRB,,,63.9,1186.83,
+,Radnički Niš,SRB,,,63.5,1177.23,
+,Radnik Surdulica,SRB,,,63.2,1170.02,
+,Javor,SRB,,,63.1,1167.62,
+,Spartak Subotica,SRB,,,62.5,1153.21,
+,Napredak,SRB,,,60.5,1105.18,
+,Zemun,SRB,,,59.5,1081.17,
+,Mladost Novi Sad,SRB,,,58.6,1059.55,
+,Voždovac,SRB,,,58.1,1047.55,
+,Mačva Šabac,SRB,,,57.7,1037.94,
+,Jedinstvo Ub,SRB,,,57.4,1030.74,
+,Tekstilac Odžaci,SRB,,,56.7,1013.93,
+,Grafičar,SRB,,,56.3,1004.32,
+,Traval Kruševac,SRB,,,55.5,985.11,
+,Teleoptik,SRB,,,55.4,982.71,
+,Ofk Vršac,SRB,,,55.4,982.71,
+,Dinamo Jug,SRB,,,54.7,965.9,
+,Fap,SRB,,,54.7,965.9,
+,Smederevo 1924,SRB,,,54.6,963.49,
+,Radnički Sr. Mitrovica,SRB,,,54.2,953.89,
+,Yverdon Sport,SUI,,,66.9,1258.88,
+,Vaduz,SUI,,,66.7,1254.07,
+,Stade-Lausanne-Ouchy,SUI,,,66.2,1242.07,
+,Xamax,SUI,,,63.4,1174.83,
+,Etoile Carouge,SUI,,,62.2,1146.01,
+,Wil,SUI,,,61.3,1124.39,
+,Kriens,SUI,,,61.1,1119.59,
+,Stade Nyonnais,SUI,,,60.6,1107.58,
+,Rapperswil-Jona,SUI,,,60.5,1105.18,
+,Bellinzona,SUI,,,59.2,1073.96,
+,Biel-Bienne,SUI,,,58.8,1064.36,
+,Bavois,SUI,,,58.1,1047.55,
+,Yf Juventus,SUI,,,56.4,1006.72,
+,Basel Ii,SUI,,,56.3,1004.32,
+,Brühl,SUI,,,55.7,989.91,
+,Young Boys Ii,SUI,,,55.5,985.11,
+,Cham,SUI,,,54.1,951.49,
+,Örgryte,SWE,,,66.4,1246.87,
+,Oddevolds,SWE,,,64.8,1208.45,
+,Falkenberg,SWE,,,64.3,1196.44,
+,Varberg,SWE,,,64.1,1191.64,
+,Helsingborg,SWE,,,63.3,1172.42,
+,Landskrona,SWE,,,63.1,1167.62,
+,Brage,SWE,,,62.8,1160.42,
+,Nordic United,SWE,,,62.3,1148.41,
+,Stockholm Inter,SWE,,,62.2,1146.01,
+,Sandviken,SWE,,,62.2,1146.01,
+,Sundsvall,SWE,,,62.1,1143.61,
+,Utsikten,SWE,,,61.9,1138.8,
+,Bodrum Fk,TUR,,,66.7,1254.07,
+,Esenler Erokspor,TUR,,,65.6,1227.66,
+,Erzurumspor Fk,TUR,,,65.3,1220.45,
+,Bandirmaspor,TUR,,,64.8,1208.45,
+,Çorum,TUR,,,64.4,1198.84,
+,Boluspor,TUR,,,64.3,1196.44,
+,Iğdir Fk,TUR,,,64.3,1196.44,
+,Amed,TUR,,,64.1,1191.64,
+,İstanbulspor,TUR,,,64.1,1191.64,
+,Pendikspor,TUR,,,64.0,1189.23,
+,Sivasspor,TUR,,,63.0,1165.22,
+,Vanspor,TUR,,,63.0,1165.22,
+,Sakaryaspor,TUR,,,62.7,1158.02,
+,Ankara Keçiörengücü,TUR,,,61.7,1134.0,
+,Serik Spor,TUR,,,60.9,1114.79,
+,Batman Petrolspor,TUR,,,60.2,1097.98,
+,Ümraniyespor,TUR,,,59.6,1083.57,
+,Sariyer,TUR,,,59.6,1083.57,
+,Manisa Fk,TUR,,,59.4,1078.77,
+,Hatayspor,TUR,,,59.3,1076.36,
+,Elaziğspor,TUR,,,58.4,1054.75,
