@@ -174,6 +174,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
     last_round_no: int = 999,
     modify_elo: bool = False,
     stdev: Optional[float] = None,
+    update_fixtures: Optional[bool] = True,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     date_str = elo_date.replace('-', '')
@@ -189,9 +190,8 @@ def build_historical_standings_table_after_at_most_n_rounds(
     else:
         elo_df = get_data_from_regression(country_code_api)
 
-    print(elo_df.head(20))
-
-    api_get_fixtures_for_league(league_id, season)
+    if update_fixtures:
+        api_get_fixtures_for_league(league_id, season)
 
     with open(f"data/fixtures_api/fixtures_{league_id}_{season}.json", "r") as f:
         fixtures = json.load(f)['response']
@@ -205,14 +205,22 @@ def build_historical_standings_table_after_at_most_n_rounds(
         home_team = fixture['teams']['home']['name']
         fixture_teams.add(home_team)
 
-    print(fixture_teams)
-    print(elo_dict.keys())
+    # print(fixture_teams)
+    # print(elo_dict.keys())
+
+    elo_dict = {k: v for k, v in elo_dict.items() if k in fixture_teams}
+    points_dict = {k: v for k, v in points_dict.items() if k in fixture_teams}
+    games_played_dict = {
+        k: v for k, v in games_played_dict.items() if k in fixture_teams
+    }
 
     missing_teams = fixture_teams - set(elo_dict.keys())
     if len(missing_teams) > 0:
-        print(
-            f"The following teams are missing ELO ratings: {missing_teams}. Please update the mapping file or provide ELO data for these teams."
-        )
+
+        print('The following teams are missing from the mapping file:')
+        for team in missing_teams:
+            print(team)
+        print('Please update the mapping file (fixtures column).')
         raise Exception("Missing ELO ratings for some teams.")
 
     for fixture in fixtures:
@@ -379,6 +387,7 @@ def run_multiple_sims(
     modify_elo_retro: bool = False,
     stdev: Optional[float] = None,
     standings_df: Optional[pd.DataFrame] = None,
+    update_fixtures: Optional[bool] = True,
 ) -> pd.DataFrame:
     if standings_df is None:
         standings_df = build_historical_standings_table_after_at_most_n_rounds(
@@ -390,19 +399,21 @@ def run_multiple_sims(
             last_round_for_standings,
             modify_elo_retro,
             stdev,
+            update_fixtures,
         )
-    print(standings_df)
 
     winners_with_losing_all_tbs = dict()
     winners_with_random_tbs = dict()
+
+    xpts = {k: 0 for k in standings_df['Club'].tolist()}
 
     for _ in tqdm(range(number_of_sims)):
         new_standings_df = copy.deepcopy(standings_df)
 
         if stdev is not None:
-            new_standings_df['Elo'] = new_standings_df['Elo'] + new_standings_df[
-                'Elo'
-            ].apply(lambda x: random.gauss(0, stdev)).round().astype(int)
+            new_standings_df['Elo'] = new_standings_df['Elo'] + [
+                round(random.gauss(0, stdev)) for _ in range(new_standings_df.shape[0])
+            ]
 
         winners_df = simulate_season_after_n_rounds(
             league_id,
@@ -444,17 +455,28 @@ def run_multiple_sims(
             except KeyError:
                 winners_with_random_tbs[winners_df.iloc[i]['Club']] = 1
 
+        for i in range(winners_df.shape[0]):
+            club = winners_df.iloc[i]['Club']
+            points = winners_df.iloc[i]['Points']
+            xpts[club] += points
+
     random_tbs_df = pd.DataFrame(
         list(winners_with_random_tbs.items()), columns=['Club', 'RTB Wins']
     )
     losing_all_tbs_df = pd.DataFrame(
         list(winners_with_losing_all_tbs.items()), columns=['Club', 'LTB Wins']
     )
+    xpts_df = pd.DataFrame(list(xpts.items()), columns=['Club', 'Expected Points'])
 
     df = pd.merge(random_tbs_df, losing_all_tbs_df, on='Club', how='outer')
+    df = pd.merge(df, xpts_df, on='Club', how='inner')
+    df = df[['Club', 'Expected Points', 'RTB Wins', 'LTB Wins']]
+    df.rename(columns={'Expected Points': 'xPts'}, inplace=True)
+
     df.fillna(0, inplace=True)
     df.reset_index(drop=True, inplace=True)
 
+    df['xPts'] = df['xPts'].apply(lambda x: round(x / number_of_sims, 2))
     df['% RTB winrate'] = round(df['RTB Wins'] / number_of_sims * 100, 1)
     df['% LTB winrate'] = round(df['LTB Wins'] / number_of_sims * 100, 1)
     df['Exp. RTB odds'] = round(number_of_sims / df['RTB Wins'], 2)
@@ -463,4 +485,29 @@ def run_multiple_sims(
     df.index += 1
     print(f'{number_of_sims} simulations')
     print(f'{number_of_winning_places} winning places')
+    if reverse:
+        print('Reverse: TRUE')
     return df
+
+
+def run_full_table_sims(
+    league_id: str,
+    season: str,
+    country_code_elo: Optional[str],
+    country_code_api: Optional[str],
+    elo_date: Optional[str],
+    number_of_sims: int,
+    number_of_winning_places: int,
+    reverse: bool = False,
+    last_round_for_standings: int = 999,
+    round_to_overwrite_with_sims_from: int = 999,
+    modify_elo_in_sim: bool = False,
+    modify_elo_retro: bool = False,
+    stdev: Optional[float] = None,
+    standings_df: Optional[pd.DataFrame] = None,
+    update_fixtures: Optional[bool] = True,
+) -> pd.DataFrame:
+
+    # TODO
+
+    pass
