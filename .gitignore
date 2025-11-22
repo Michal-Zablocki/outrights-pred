@@ -1,11 +1,14 @@
 .env
 __pycache__/*
+/data/club-rankings-ext/*
 /data/elo/*
 /data/fixtures_api/*
 /data/opta/*
 /data/transformed/*
+/data/webpages/*
 /data/*.csv
 *tmp*
 *priv*
 *.png
 *ad_hoc*
+*kelly*
