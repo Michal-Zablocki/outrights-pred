@@ -7,6 +7,7 @@ __pycache__/*
 /data/transformed/*
 /data/webpages/*
 /data/*.csv
+/papers/*
 *tmp*
 *priv*
 *.png

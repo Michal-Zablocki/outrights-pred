@@ -11,8 +11,6 @@ from sklearn.preprocessing import PolynomialFeatures
 
 matplotlib.interactive(False)
 
-OPTA_DATE = '2025-11-07'
-ELO_DATE = '2025-11-07'
 MAPPING_FILEPATH = 'teams_mapping/team_names.xlsx'
 
 COUNTRY_DICT = {
@@ -103,11 +101,12 @@ def get_opta_country_codes(opta_df: pd.DataFrame) -> list[str]:
 
 
 def get_elo_ratings(
-    opta_country_codes: list[str], file_path: Optional[str] = None
+    opta_country_codes: list[str],
+    elo_date: str,
+    file_path: Optional[str] = None,
 ) -> pd.DataFrame:
     """Loads ELO ratings and filters data matched with Opta country codes."""
-    if file_path is None:
-        file_path = f'data/elo/{ELO_DATE.replace("-", "")}.csv'
+    file_path = f'data/elo/{elo_date.replace("-", "")}.csv'
     elo_df = pd.read_csv(file_path)
 
     elo_df = elo_df[elo_df['Country'].isin(opta_country_codes)]
@@ -326,14 +325,30 @@ def plot_results(merged_df: pd.DataFrame, lr: LinearRegression) -> None:
     plt.savefig('data/regression_plot.png')
 
 
+def predict_elo_with_custom_weights(
+    df: pd.DataFrame, coefficient: float, intercept: float
+) -> float:
+    df['predicted_Elo'] = df['Rating'] * coefficient + intercept
+
+    df['predicted_Elo'] = df['predicted_Elo'].apply(lambda x: round(x, 2))
+    df['error'] = df['Elo'] - df['predicted_Elo']
+    df['error'] = df['error'].apply(lambda x: round(x) if pd.notnull(x) else x)
+    df.to_csv('data/reg_results.csv', index=False)
+    return df
+
+
 def main_regression(
-    country_to_ignore: Optional[str] = None, level_to_ignore: Optional[int] = None
+    elo_date: str,
+    opta_date: str,
+    country_to_ignore: Optional[str] = None,
+    level_to_ignore: Optional[int] = None,
+    **kwargs,
 ):
     """Main function to run the regression."""
-    concat_opta_csvs(OPTA_DATE)
-    opta_df = load_opta_ratings(OPTA_DATE)
+    concat_opta_csvs(opta_date)
+    opta_df = load_opta_ratings(opta_date)
     opta_country_codes = get_opta_country_codes(opta_df)
-    elo_df = get_elo_ratings(opta_country_codes)
+    elo_df = get_elo_ratings(opta_country_codes, elo_date)
     map_df = get_map_df()
     elo_matched_df = sanitize_elo_df(map_df, elo_df)
     opta_matched_df, opta_unmatched_df = sanitize_opta_df(
@@ -351,8 +366,13 @@ def main_regression(
         [final_df, opta_unmatched_df],
         ignore_index=True,
     )
-    predicted_df = predict_elo(new_df, lr)
+    # predicted_df = predict_elo(new_df, lr)
+    predict_elo_with_custom_weights(new_df, coefficient=22.5801, intercept=-256.9035)
 
 
 if __name__ == "__main__":
-    main_regression()
+    CONFIG = {
+        'elo_date': '2025-11-10',
+        'opta_date': '2025-11-07',
+    }
+    main_regression(**CONFIG)

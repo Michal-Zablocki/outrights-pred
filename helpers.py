@@ -17,13 +17,13 @@ from tqdm import tqdm
 load_dotenv()
 
 API_TOKEN = os.getenv('X-RapidAPI-Key')
-HFA = 60  # home field advantage
+HFA = 0.045  # home field advantage; optimized
 K_FACTOR = 20  # Elo rating system K-factor
-NU = 1.5  # draw parameter
+NU = 1.65  # draw parameter; optimized
 
 
 def read_fixtures(
-    league_id: str, season: str, is_european_league: Optional[bool] = False
+    league_id: str, season: str, is_european_league: Optional[bool] = False, **kwargs
 ) -> dict:
     """Read fixtures from a local JSON file."""
 
@@ -47,7 +47,7 @@ def save_round_divide(num, den, precision=2) -> int | float:
         return round(num / den, precision)
 
 
-def download_elo_data(date=None) -> None:
+def download_elo_data(date=None, **kwargs) -> None:
     """Note: apparently only European clubs are included."""
 
     if date is None:
@@ -83,7 +83,7 @@ def api_get_leagues() -> None:
         json.dump(response.json(), f)
 
 
-def api_get_fixtures_for_league(league_id: str, season: str) -> None:
+def api_get_fixtures_for_league(league_id: str, season: str, **kwargs) -> None:
     """Get fixtures for a given league and season from the API and save to a file."""
     url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
     params = {"league": league_id, "season": season}
@@ -137,7 +137,7 @@ def find_latest_elo_file() -> str:
 #     df.to_excel('tmp_team_names_api.xlsx', index=False)
 
 
-def find_league_id(country_code: str, league_name: str) -> str:
+def find_league_id(country_code: str, league_name: str, **kwargs) -> str:
     """Find league ID based on country code and league name."""
 
     with open("data/fixtures_api/leagues.json", "r") as f:
@@ -151,7 +151,9 @@ def find_league_id(country_code: str, league_name: str) -> str:
                 return league['league']['id']
 
 
-def get_api_teams_and_elo_from_clubelo(date: str, country_code: str) -> pd.DataFrame:
+def get_api_teams_and_elo_from_clubelo(
+    date: str, country_code: str, **kwargs
+) -> pd.DataFrame:
     """Get teams and their ELO ratings from ClubElo data for a given date and country code, 1st league tier."""
 
     date = date.replace('-', '')
@@ -200,7 +202,7 @@ def get_api_teams_and_elo_from_clubelo(date: str, country_code: str) -> pd.DataF
     return df
 
 
-def get_data_from_regression(country_code: Optional[str]) -> pd.DataFrame:
+def get_data_from_regression(country_code: Optional[str], **kwargs) -> pd.DataFrame:
     """Get team names and predicted ELO from regression results, optionally filtered by country code."""
 
     team_map_df = pd.read_excel('teams_mapping/team_names.xlsx')
@@ -234,6 +236,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
     stdev: Optional[float] = None,
     update_fixtures: Optional[bool] = True,
     is_european_league: Optional[bool] = False,
+    **kwargs,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Build historical standings table after at most n rounds."""
 
@@ -304,7 +307,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
             home_elo = elo_dict[home_team]
             away_elo = elo_dict[away_team]
 
-            elo_difference = home_elo - away_elo + HFA
+            elo_difference = home_elo * (1 + HFA) - away_elo
 
             if home_goals > away_goals:
                 elo_delta = (
@@ -351,6 +354,7 @@ def simulate_season_after_n_rounds(
     round_to_overwrite_with_sims_from: int = 999,
     modify_elo_in_sim: bool = False,
     is_european_league: Optional[bool] = False,
+    **kwargs,
 ) -> pd.DataFrame:
     """Simulate the rest of the season after n rounds."""
 
@@ -376,7 +380,7 @@ def simulate_season_after_n_rounds(
         home_elo = elo_dict[home_team]
         away_elo = elo_dict[away_team]
 
-        elo_difference = home_elo - away_elo + HFA
+        elo_difference = home_elo * (1 + HFA) - away_elo
 
         p_win_base = 1 / (1 + math.pow(10, -elo_difference / 400))
         denom = 1 + NU * p_win_base * (1 - p_win_base)
@@ -451,6 +455,7 @@ def run_multiple_sims(
     is_european_league: Optional[bool] = False,
     range_from: Optional[int] = None,
     range_to: Optional[int] = None,
+    **kwargs,
 ) -> pd.DataFrame:
     """Run multiple simulations of the season after n rounds."""
 
@@ -573,7 +578,6 @@ def run_full_table_sims(
     country_code_api: Optional[str],
     elo_date: Optional[str],
     number_of_sims: int,
-    number_of_winning_places: int,
     reverse: bool = False,
     last_round_for_standings: int = 999,
     round_to_overwrite_with_sims_from: int = 999,
@@ -583,6 +587,7 @@ def run_full_table_sims(
     standings_df: Optional[pd.DataFrame] = None,
     update_fixtures: Optional[bool] = True,
     is_european_league: Optional[bool] = False,
+    **kwargs,
 ) -> pd.DataFrame:
     """Run full table simulations of the season after n rounds."""
 
@@ -610,7 +615,7 @@ def run_full_table_sims(
     fixtures = read_fixtures(league_id, season, is_european_league)
 
     for _ in tqdm(range(number_of_sims)):
-        new_standings_df = copy.deepcopy(standings_df)
+        new_standings_df = standings_df.copy()
 
         if stdev is not None and stdev != 0:
             new_standings_df['Elo'] = new_standings_df['Elo'] + [
@@ -687,7 +692,6 @@ def run_full_table_sims(
     df.reset_index(drop=True, inplace=True)
     df.index += 1
     print(f'{number_of_sims} simulations')
-    print(f'{number_of_winning_places} winning places')
     if reverse:
         print('Reverse: TRUE')
     Path('data/sims').mkdir(parents=True, exist_ok=True)

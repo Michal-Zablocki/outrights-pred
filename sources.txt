@@ -1,0 +1,11 @@
+https://www.kaggle.com/datasets/adamgbor/club-football-match-data-2000-2025/
+
+EloRatings.csv
+Matches.csv
+
+https://github.com/tonyelhabr/club-rankings/releases/tag/club-rankings
+
+clubelo-club-rankings.csv
+compared-rankings.csv
+fivethirtyeight-club-rankings.csv
+opta-club-rankings.csv 

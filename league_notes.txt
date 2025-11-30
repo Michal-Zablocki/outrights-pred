@@ -1,0 +1,32 @@
+# Brazil
+# Brazil Serie A: 71
+
+# England
+# Premier League: 39
+# Championship: 40
+# League One: 41
+# League Two: 42
+
+# France
+# Ligue 1: 61
+
+# Germany
+# Bundesliga: 78
+
+# Italy
+# Serie A: 135
+
+# Poland
+# Ekstraklasa: 106
+# I Liga [Poland]: 107
+# Polish Cup: 108
+# II Liga - East [?] [Poland]: 109
+
+# Romania
+# Liga I: 283
+
+# Scotland
+# Premiership: 179
+
+# Spain
+# La Liga: 140
