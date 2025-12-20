@@ -18,9 +18,10 @@
 
 # Poland
 # Ekstraklasa: 106
-# I Liga [Poland]: 107
+# I Liga Poland: 107
 # Polish Cup: 108
-# II Liga - East [?] [Poland]: 109
+# II Liga: 109
+# III Liga [4 groups]: 780 - 783
 
 # Romania
 # Liga I: 283

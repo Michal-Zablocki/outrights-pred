@@ -1,4 +1,5 @@
 import copy
+from dataclasses import dataclass
 from datetime import datetime
 import json
 import math
@@ -21,6 +22,126 @@ HFA = 0.045  # home field advantage; optimized
 K_FACTOR = 20  # Elo rating system K-factor
 NU = 1.65  # draw parameter; optimized
 
+SORTING_ORDERS = {
+    'POL': [
+        'Points',
+        'Goal difference',
+        'Goals for',
+        'Wins',
+        'Random order',
+    ],  # missing head-to-head as 2.
+    'UCL': [
+        'Points',
+        'Goal difference',
+        'Goals for',
+        'Wins',
+        'Random order',
+    ],  # missing goals away as 4.
+    'UEL': [
+        'Points',
+        'Goal difference',
+        'Goals for',
+        'Wins',
+        'Random order',
+    ],  # missing goals away as 4.
+    'ECL': [
+        'Points',
+        'Goal difference',
+        'Goals for',
+        'Wins',
+        'Random order',
+    ],  # missing goals away as 4.
+}
+
+
+@dataclass
+class TeamInTable:
+    name: str
+    elo: Optional[float]
+    matches_played: int
+    wins: int
+    draws: int
+    losses: int
+    goals_for: int
+    goals_against: int
+    goals_diff: int
+    points: int
+
+
+@dataclass
+class TeamInResults:
+    name: str
+    elo: Optional[float]
+    wins: int
+    wins_in_tb: int
+    losses_in_tb: int
+    x_points: int
+
+
+def get_sorting_order_for_country_code(country_code: str) -> list[str]:
+    """Get sorting order based on country code."""
+
+    if country_code in SORTING_ORDERS:
+        return SORTING_ORDERS[country_code]
+    else:
+        return SORTING_ORDERS['POL']
+
+
+def dict_of_teams_to_df(
+    league_table: dict, sorting_order: Optional[list[str]] = None, reverse: bool = False
+) -> pd.DataFrame:
+    """Convert a dictionary of TeamInTable to a DataFrame."""
+
+    standings_df = pd.DataFrame(
+        [
+            {
+                'Club': team_data.name,
+                'Elo': team_data.elo,
+                'Matches played': team_data.matches_played,
+                'Wins': team_data.wins,
+                'Draws': team_data.draws,
+                'Losses': team_data.losses,
+                'Goals for': team_data.goals_for,
+                'Goals against': team_data.goals_against,
+                'Goal difference': team_data.goals_diff,
+                'Points': team_data.points,
+            }
+            for team_data in league_table.values()
+        ]
+    )
+    standings_df['Random order'] = np.random.permutation(standings_df.shape[0])
+
+    if not sorting_order:
+        sorting_order = ['Points', 'Goal difference', 'Random order']
+
+    standings_df = standings_df.sort_values(
+        by=sorting_order, ascending=reverse
+    ).reset_index(drop=True)
+    standings_df.index += 1
+
+    return standings_df
+
+
+def df_to_dict_of_teams(standings_df: pd.DataFrame) -> dict:
+    """Convert a DataFrame to a dictionary of TeamInTable."""
+
+    league_table = {}
+    for _, row in standings_df.iterrows():
+        league_table[row['Club']] = TeamInTable(
+            row['Club'],
+            row['Elo'],
+            row['Matches played'],
+            row['Wins'],
+            row['Draws'],
+            row['Losses'],
+            row['Goals for'],
+            row['Goals against'],
+            row['Goal difference'],
+            row['Points'],
+        )
+
+    return league_table
+
 
 def read_fixtures(
     league_id: str, season: str, is_european_league: Optional[bool] = False, **kwargs
@@ -35,6 +156,7 @@ def read_fixtures(
                 for fixture in fixtures
                 if fixture['league']['round'].startswith('League Stage')
             ]
+
     return fixtures
 
 
@@ -104,10 +226,6 @@ def api_get_fixtures_for_league(league_id: str, season: str, **kwargs) -> None:
     Path("data/fixtures_api").mkdir(parents=True, exist_ok=True)
     with open(f"data/fixtures_api/fixtures_{league_id}_{season}.json", "w") as f:
         json.dump(response.json(), f)
-
-
-def api_get_standings_for_league() -> None:
-    pass
 
 
 def find_latest_elo_file() -> str:
@@ -236,6 +354,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
     stdev: Optional[float] = None,
     update_fixtures: Optional[bool] = True,
     is_european_league: Optional[bool] = False,
+    sorting_order: Optional[list[str]] = None,
     **kwargs,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Build historical standings table after at most n rounds."""
@@ -258,37 +377,56 @@ def build_historical_standings_table_after_at_most_n_rounds(
 
     fixtures = read_fixtures(league_id, season, is_european_league)
 
-    elo_dict = {row['Club']: row['Elo'] for _, row in elo_df.iterrows()}
-    points_dict = {row['Club']: 0 for _, row in elo_df.iterrows()}
-    games_played_dict = {row['Club']: 0 for _, row in elo_df.iterrows()}
-
     fixture_teams = set()
     for fixture in fixtures:
         home_team = fixture['teams']['home']['name']
         fixture_teams.add(home_team)
 
+    elo_dict = {row['Club']: row['Elo'] for _, row in elo_df.iterrows()}
     elo_dict = {k: v for k, v in elo_dict.items() if k in fixture_teams}
-    points_dict = {k: v for k, v in points_dict.items() if k in fixture_teams}
-    games_played_dict = {
-        k: v for k, v in games_played_dict.items() if k in fixture_teams
-    }
 
     missing_teams = fixture_teams - set(elo_dict.keys())
     if len(missing_teams) > 0:
-
         print('The following teams are missing from the mapping file:')
         for team in missing_teams:
             print(team)
-        print('Please update the mapping file (fixtures column).')
-        raise Exception("Missing ELO ratings for some teams.")
+        raise Exception(
+            'Please update the mapping file (fixtures column) - missing ELO ratings.'
+        )
 
+    league_table = {
+        team: TeamInTable(team, elo_dict[team], 0, 0, 0, 0, 0, 0, 0, 0)
+        for team in fixture_teams
+    }
+
+    fixtures_filtered = []
     for fixture in fixtures:
         round_str = int(fixture['league']['round'].split(' ')[-1])
         if (round_str > last_round_no) or (
             fixture['fixture']['status']['long'] != 'Match Finished'
         ):
             continue
+        if str(fixture['fixture']['id']) == '1396000':  # duplicate
+            continue
 
+        fixtures_filtered.append(fixture)
+
+    league_table = update_league_table_with_historical_fixtures(
+        league_table, fixtures_filtered
+    )
+
+    standings_df = dict_of_teams_to_df(league_table)
+
+    return standings_df
+
+
+def update_league_table_with_historical_fixtures(
+    league_table: dict,
+    fixtures: dict,
+    modify_elo_in_sim: Optional[bool] = False,
+) -> dict:
+
+    for fixture in fixtures:
         home_team = fixture['teams']['home']['name']
         away_team = fixture['teams']['away']['name']
 
@@ -296,16 +434,24 @@ def build_historical_standings_table_after_at_most_n_rounds(
         away_goals = fixture['goals']['away']
 
         if home_goals > away_goals:
-            points_dict[home_team] += 3
+            league_table[home_team].wins += 1
+            league_table[away_team].losses += 1
         elif home_goals < away_goals:
-            points_dict[away_team] += 3
-        else:
-            points_dict[home_team] += 1
-            points_dict[away_team] += 1
+            league_table[home_team].losses += 1
+            league_table[away_team].wins += 1
+        elif home_goals == away_goals:
+            league_table[home_team].draws += 1
+            league_table[away_team].draws += 1
 
-        if modify_elo:
-            home_elo = elo_dict[home_team]
-            away_elo = elo_dict[away_team]
+        league_table[home_team].goals_for += home_goals
+        league_table[away_team].goals_for += away_goals
+
+        league_table[home_team].goals_against += away_goals
+        league_table[away_team].goals_against += home_goals
+
+        if modify_elo_in_sim:
+            home_elo = league_table[home_team].elo
+            away_elo = league_table[away_team].elo
 
             elo_difference = home_elo * (1 + HFA) - away_elo
 
@@ -322,63 +468,40 @@ def build_historical_standings_table_after_at_most_n_rounds(
                     1 / 2 - 1 / (1 + math.pow(10, -elo_difference / 400))
                 ) * K_FACTOR
 
-            elo_dict[home_team] += elo_delta
-            elo_dict[away_team] -= elo_delta
+            league_table[home_team].elo += elo_delta
+            league_table[away_team].elo -= elo_delta
 
-        games_played_dict[home_team] += 1
-        games_played_dict[away_team] += 1
+    for team in league_table.keys():
+        league_table[team].matches_played = (
+            league_table[team].wins
+            + league_table[team].draws
+            + league_table[team].losses
+        )
+        league_table[team].points = (
+            league_table[team].wins * 3 + league_table[team].draws * 1
+        )
+        league_table[team].goals_diff = (
+            league_table[team].goals_for - league_table[team].goals_against
+        )
 
-    points_df = pd.DataFrame(points_dict.items(), columns=['Club', 'Points'])
-    elo_df = pd.DataFrame(elo_dict.items(), columns=['Club', 'Elo'])
-    games_played_df = pd.DataFrame(
-        games_played_dict.items(), columns=['Club', 'Games played']
-    )
+    for k, v in league_table.items():
+        if k == 'Lechia Gdansk':
+            league_table[k].points -= 5  # deduction
 
-    standings_df = pd.merge(elo_df, points_df, on='Club', how='inner')
-    standings_df = pd.merge(standings_df, games_played_df, on='Club', how='inner')
-
-    standings_df = standings_df.sort_values(by=['Points'], ascending=False).reset_index(
-        drop=True
-    )
-    standings_df.index += 1
-
-    return standings_df
+    return league_table
 
 
-def simulate_season_after_n_rounds(
-    league_id: str,
-    season: str,
-    standings_df: pd.DataFrame,
-    fixtures: Optional[dict] = None,
-    reverse: bool = False,
-    round_to_overwrite_with_sims_from: int = 999,
-    modify_elo_in_sim: bool = False,
-    is_european_league: Optional[bool] = False,
-    **kwargs,
-) -> pd.DataFrame:
-    """Simulate the rest of the season after n rounds."""
-
-    if fixtures is None:
-        fixtures = read_fixtures(league_id, season, is_european_league)
-
-    elo_dict = {row['Club']: row['Elo'] for _, row in standings_df.iterrows()}
-    points_dict = {row['Club']: row['Points'] for _, row in standings_df.iterrows()}
-    games_played_dict = {
-        row['Club']: row['Games played'] for _, row in standings_df.iterrows()
-    }
-
+def update_league_table_with_future_fixtures(
+    league_table: dict,
+    fixtures: dict,
+    modify_elo_in_sim: Optional[bool] = False,
+) -> dict:
     for fixture in fixtures:
-        round_str = int(fixture['league']['round'].split(' ')[-1])
-        if (round_str <= round_to_overwrite_with_sims_from) and (
-            fixture['fixture']['status']['long'] == 'Match Finished'
-        ):
-            continue
-
         home_team = fixture['teams']['home']['name']
         away_team = fixture['teams']['away']['name']
 
-        home_elo = elo_dict[home_team]
-        away_elo = elo_dict[away_team]
+        home_elo = league_table[home_team].elo
+        away_elo = league_table[away_team].elo
 
         elo_difference = home_elo * (1 + HFA) - away_elo
 
@@ -391,12 +514,25 @@ def simulate_season_after_n_rounds(
         result = random.choices(['home_win', 'away_win', 'draw'], [pH, pA, pD])[0]
 
         if result == 'home_win':
-            points_dict[home_team] += 3
+            league_table[home_team].wins += 1
+            league_table[away_team].losses += 1
+
+            league_table[home_team].goals_for += 2
+            league_table[away_team].goals_against += 2
         elif result == 'away_win':
-            points_dict[away_team] += 3
+            league_table[home_team].losses += 1
+            league_table[away_team].wins += 1
+
+            league_table[away_team].goals_for += 2
+            league_table[home_team].goals_against += 2
         elif result == 'draw':
-            points_dict[home_team] += 1
-            points_dict[away_team] += 1
+            league_table[home_team].draws += 1
+            league_table[away_team].draws += 1
+
+            league_table[home_team].goals_for += 1
+            league_table[away_team].goals_for += 1
+            league_table[home_team].goals_against += 1
+            league_table[away_team].goals_against += 1
 
         if modify_elo_in_sim:
             if result == 'home_win':
@@ -412,28 +548,64 @@ def simulate_season_after_n_rounds(
                     1 / 2 - 1 / (1 + math.pow(10, -elo_difference / 400))
                 ) * K_FACTOR
 
-            elo_dict[home_team] += elo_delta
-            elo_dict[away_team] -= elo_delta
+            league_table[home_team].elo += elo_delta
+            league_table[away_team].elo -= elo_delta
 
-        games_played_dict[home_team] += 1
-        games_played_dict[away_team] += 1
+    for team in league_table.keys():
+        league_table[team].matches_played = (
+            league_table[team].wins
+            + league_table[team].draws
+            + league_table[team].losses
+        )
+        league_table[team].points = (
+            league_table[team].wins * 3 + league_table[team].draws * 1
+        )
+        league_table[team].goals_diff = (
+            league_table[team].goals_for - league_table[team].goals_against
+        )
 
-    points_df = pd.DataFrame(points_dict.items(), columns=['Club', 'Points'])
-    elo_df = pd.DataFrame(elo_dict.items(), columns=['Club', 'Elo'])
-    games_played_dict = pd.DataFrame(
-        games_played_dict.items(), columns=['Club', 'Games played']
+    for k, v in league_table.items():
+        if k == 'Lechia Gdansk':
+            league_table[k].points -= 5  # deduction
+
+    return league_table
+
+
+def simulate_season_after_n_rounds(
+    league_id: str,
+    season: str,
+    standings_df: pd.DataFrame,
+    fixtures: Optional[dict] = None,
+    reverse: bool = False,
+    round_to_overwrite_with_sims_from: int = 999,
+    modify_elo_in_sim: bool = False,
+    is_european_league: Optional[bool] = False,
+    sorting_order: Optional[list[str]] = None,
+    **kwargs,
+) -> pd.DataFrame:
+    """Simulate the rest of the season after n rounds."""
+
+    if fixtures is None:
+        fixtures = read_fixtures(league_id, season, is_european_league)
+
+    league_table = df_to_dict_of_teams(standings_df)
+
+    fixtures_filtered = []
+    for fixture in fixtures:
+        round_str = int(fixture['league']['round'].split(' ')[-1])
+        if (round_str <= round_to_overwrite_with_sims_from) and (
+            fixture['fixture']['status']['long'] == 'Match Finished'
+        ):
+            continue
+        fixtures_filtered.append(fixture)
+
+    league_table = update_league_table_with_future_fixtures(
+        league_table, fixtures_filtered, modify_elo_in_sim=modify_elo_in_sim
     )
 
-    season_standings_df = pd.merge(points_df, elo_df, on='Club', how='inner')
-    season_standings_df = pd.merge(
-        season_standings_df, games_played_dict, on='Club', how='inner'
-    )
+    standings_df = dict_of_teams_to_df(league_table, sorting_order, reverse)
 
-    season_standings_df = season_standings_df.sort_values(
-        by=['Points'], ascending=reverse
-    )
-
-    return season_standings_df
+    return standings_df
 
 
 def run_multiple_sims(
@@ -455,6 +627,7 @@ def run_multiple_sims(
     is_european_league: Optional[bool] = False,
     range_from: Optional[int] = None,
     range_to: Optional[int] = None,
+    sorting_order: Optional[list[str]] = None,
     **kwargs,
 ) -> pd.DataFrame:
     """Run multiple simulations of the season after n rounds."""
@@ -473,10 +646,9 @@ def run_multiple_sims(
             is_european_league,
         )
 
-    winners_with_losing_all_tbs = dict()
-    winners_with_random_tbs = dict()
-
-    xpts = {k: 0 for k in standings_df['Club'].tolist()}
+    main_results = {}
+    for _, row in standings_df.iterrows():
+        main_results[row['Club']] = TeamInResults(row['Club'], row['Elo'], 0, 0, 0, 0)
 
     fixtures = read_fixtures(league_id, season, is_european_league)
 
@@ -497,13 +669,8 @@ def run_multiple_sims(
             round_to_overwrite_with_sims_from,
             modify_elo_in_sim,
             is_european_league,
+            sorting_order,
         )
-
-        winners_df['Tiebreaking order'] = np.random.permutation(winners_df.shape[0])
-
-        winners_df = winners_df.sort_values(
-            by=['Points', 'Tiebreaking order'], ascending=reverse
-        ).reset_index(drop=True)
 
         if (
             winners_df.iloc[number_of_winning_places - 1]['Points']
@@ -511,58 +678,81 @@ def run_multiple_sims(
         ):
             tie_points = winners_df.iloc[number_of_winning_places - 1]['Points']
 
-            for i in range(number_of_winning_places):
-                if winners_df.iloc[i]['Points'] != tie_points:
-                    try:
-                        winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] += 1
-                    except KeyError:
-                        winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] = 1
+            for i in range(winners_df.shape[0]):
+                if winners_df.iloc[i]['Points'] == tie_points:
+                    if i < number_of_winning_places:
+                        main_results[winners_df.iloc[i]['Club']].wins_in_tb += 1
+                    else:
+                        main_results[winners_df.iloc[i]['Club']].losses_in_tb += 1
+                elif i < number_of_winning_places:
+                    main_results[winners_df.iloc[i]['Club']].wins += 1
+                else:
+                    break
         else:
             for i in range(number_of_winning_places):
-                try:
-                    winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] += 1
-                except KeyError:
-                    winners_with_losing_all_tbs[winners_df.iloc[i]['Club']] = 1
-
-        for i in range(number_of_winning_places):
-            try:
-                winners_with_random_tbs[winners_df.iloc[i]['Club']] += 1
-            except KeyError:
-                winners_with_random_tbs[winners_df.iloc[i]['Club']] = 1
+                main_results[winners_df.iloc[i]['Club']].wins += 1
 
         for i in range(winners_df.shape[0]):
             club = winners_df.iloc[i]['Club']
             points = winners_df.iloc[i]['Points']
-            xpts[club] += points
+            main_results[club].x_points += points
 
-    random_tbs_df = pd.DataFrame(
-        list(winners_with_random_tbs.items()), columns=['Club', 'RTB Wins']
+    df = pd.DataFrame(
+        [
+            {
+                'Club': team_data.name,
+                'Elo': team_data.elo,
+                'xPts': team_data.x_points,
+                'Wins': team_data.wins,
+                'Wins in TB': team_data.wins_in_tb,
+                'Losses in TB': team_data.losses_in_tb,
+            }
+            for team_data in main_results.values()
+        ]
     )
-    losing_all_tbs_df = pd.DataFrame(
-        list(winners_with_losing_all_tbs.items()), columns=['Club', 'LTB Wins']
-    )
-    xpts_df = pd.DataFrame(list(xpts.items()), columns=['Club', 'Expected Points'])
 
-    df = pd.merge(random_tbs_df, losing_all_tbs_df, on='Club', how='outer')
-    df = pd.merge(df, xpts_df, on='Club', how='inner')
-    df = df[['Club', 'Expected Points', 'RTB Wins', 'LTB Wins']]
-    df.rename(columns={'Expected Points': 'xPts'}, inplace=True)
-
-    df.fillna(0, inplace=True)
     df.reset_index(drop=True, inplace=True)
 
     df['xPts'] = df['xPts'].apply(lambda x: round(x / number_of_sims, 2))
-    df['RTB Wins'] = df['RTB Wins'].astype(int)
-    df['LTB Wins'] = df['LTB Wins'].astype(int)
-    df['% RTB winrate'] = round(df['RTB Wins'] / number_of_sims * 100, 1)
-    df['% LTB winrate'] = round(df['LTB Wins'] / number_of_sims * 100, 1)
-    df['Exp. RTB odds'] = df.apply(
-        lambda row: save_round_divide(number_of_sims, row['RTB Wins']), axis=1
+    df['% Wins'] = round(df['Wins'] / number_of_sims * 100, 1)
+    df['% Wins + won TB'] = round(
+        (df['Wins'] + df['Wins in TB']) / number_of_sims * 100, 1
     )
-    df['Exp. LTB odds'] = df.apply(
-        lambda row: save_round_divide(number_of_sims, row['LTB Wins']), axis=1
+    df['% Wins + all TB'] = round(
+        (df['Wins'] + df['Wins in TB'] + df['Losses in TB']) / number_of_sims * 100, 1
     )
-    df = df.sort_values(by=['RTB Wins'], ascending=False).reset_index(drop=True)
+    df['Odds % Wins'] = df['Wins'].apply(
+        lambda x: round(number_of_sims / x, 2) if x != 0 else 'N/A'
+    )
+    df['Odds % Wins'] = df['Odds % Wins'].apply(
+        lambda x: round(x) if x != 'N/A' and x >= 10.0 else x
+    )
+    df['Odds % Wins + won TB'] = df.apply(
+        lambda x: (
+            round(number_of_sims / (x['Wins'] + x['Wins in TB']), 2)
+            if (x['Wins'] + x['Wins in TB']) != 0
+            else 'N/A'
+        ),
+        axis=1,
+    )
+    df['Odds % Wins + won TB'] = df['Odds % Wins + won TB'].apply(
+        lambda x: round(x) if x != 'N/A' and x >= 10.0 else x
+    )
+    df['Odds % Wins + all TB'] = df.apply(
+        lambda x: (
+            round(
+                number_of_sims / (x['Wins'] + x['Wins in TB'] + x['Losses in TB']),
+                2,
+            )
+            if (x['Wins'] + x['Wins in TB'] + x['Losses in TB']) != 0
+            else 'N/A'
+        ),
+        axis=1,
+    )
+    df['Odds % Wins + all TB'] = df['Odds % Wins + all TB'].apply(
+        lambda x: round(x) if x != 'N/A' and x >= 10.0 else x
+    )
+    df = df.sort_values(by=['% Wins'], ascending=False).reset_index(drop=True)
     df.index += 1
     print(f'{number_of_sims} simulations')
     print(f'{number_of_winning_places} winning places')
@@ -587,6 +777,7 @@ def run_full_table_sims(
     standings_df: Optional[pd.DataFrame] = None,
     update_fixtures: Optional[bool] = True,
     is_european_league: Optional[bool] = False,
+    sorting_order: Optional[list[str]] = None,
     **kwargs,
 ) -> pd.DataFrame:
     """Run full table simulations of the season after n rounds."""
@@ -631,13 +822,8 @@ def run_full_table_sims(
             round_to_overwrite_with_sims_from,
             modify_elo_in_sim,
             is_european_league,
+            sorting_order,
         )
-
-        winners_df['Tiebreaking order'] = np.random.permutation(winners_df.shape[0])
-
-        winners_df = winners_df.sort_values(
-            by=['Points', 'Tiebreaking order'], ascending=reverse
-        ).reset_index(drop=True)
 
         for i in range(winners_df.shape[0]):
             club = winners_df.iloc[i]['Club']
@@ -666,13 +852,24 @@ def run_full_table_sims(
             ),
             axis=1,
         )
-    else:
-        df['Top 4'] = df.apply(
+        df['25 - 36'] = df.apply(
             lambda row: round(
-                sum([row[i] for i in range(1, 5)]) / number_of_sims * 100, 1
+                sum([row[i] for i in range(25, 37)]) / number_of_sims * 100, 1
             ),
             axis=1,
         )
+    else:
+        pass
+        # for top in ['2', '3', '4', '6']:
+        #     df[f'Top {top}'] = df.apply(
+        #         lambda row: round(
+        #             sum([row[i] for i in range(1, int(top) + 1)])
+        #             / number_of_sims
+        #             * 100,
+        #             1,
+        #         ),
+        #         axis=1,
+        #     )
 
     for place in range(1, standings_df.shape[0] + 1):
         df[place] = df[place].apply(lambda x: round(x / number_of_sims * 100, 1))
@@ -681,12 +878,14 @@ def run_full_table_sims(
 
     if is_european_league:
         df = df[
-            ['Club', 'Elo', 'xPts', 'Top 8', '9 - 24']
+            ['Club', 'Elo', 'xPts', 'Top 8', '9 - 24', '25 - 36']
             + list(range(1, standings_df.shape[0] + 1))
         ]
     else:
         df = df[
-            ['Club', 'Elo', 'xPts', 'Top 4'] + list(range(1, standings_df.shape[0] + 1))
+            ['Club', 'Elo', 'xPts']
+            # + [f'Top {top}' for top in ['2', '3', '4', '6']]
+            + list(range(1, standings_df.shape[0] + 1))
         ]
 
     df.reset_index(drop=True, inplace=True)
@@ -695,15 +894,59 @@ def run_full_table_sims(
     if reverse:
         print('Reverse: TRUE')
     Path('data/sims').mkdir(parents=True, exist_ok=True)
-    df.to_excel(f'data/sims/{league_id}_{season}_full_table_sim.xlsx', index=False)
+    df.to_excel(
+        f'data/sims/{league_id}_{season}_{datetime.today().strftime("%Y-%m-%d")}_full_table.xlsx',
+        index=False,
+    )
     return df
 
 
-# standings_df = build_historical_standings_table_after_at_most_n_rounds(
-#     league_id=109,
-#     season=2025,
-#     country_code_elo=None,
-#     country_code_api='POL',
-#     elo_date='2025-11-10',
-#     update_fixtures=False,
-# )
+def simulate_odds(
+    standings_df,
+    league_id: int,
+    season: int,
+    is_european_league: bool,
+    round_no: int,
+    **kwargs,
+) -> dict:
+    """Simulate odds for a given league, season and round."""
+
+    fixtures = read_fixtures(league_id, season, is_european_league)
+
+    results = []
+
+    for fixture in fixtures:
+        round_str = int(fixture['league']['round'].split(' ')[-1])
+        if round_str != round_no:
+            continue
+
+        home_team = fixture['teams']['home']['name']
+        away_team = fixture['teams']['away']['name']
+
+        home_elo = standings_df[standings_df['Club'] == home_team]['Elo'].values[0]
+        away_elo = standings_df[standings_df['Club'] == away_team]['Elo'].values[0]
+
+        elo_difference = home_elo * (1 + HFA) - away_elo
+
+        p_win_base = 1 / (1 + math.pow(10, -elo_difference / 400))
+        denom = 1 + NU * p_win_base * (1 - p_win_base)
+        pH = p_win_base / denom
+        pA = (1 - p_win_base) / denom
+        pD = 1 - pH - pA
+
+        odds_home = round(1 / pH, 2)
+        odds_draw = round(1 / pD, 2)
+        odds_away = round(1 / pA, 2)
+
+        results.append(
+            {
+                'Home Team': home_team,
+                'Away Team': away_team,
+                'Odds H': odds_home,
+                'Odds D': odds_draw,
+                'Odds A': odds_away,
+            }
+        )
+
+    results = pd.DataFrame(results)
+    return results
