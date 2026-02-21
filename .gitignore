@@ -8,8 +8,9 @@ __pycache__/*
 /data/webpages/*
 /data/*.csv
 /papers/*
+/pngs/*
 *tmp*
 *priv*
-*.png
+prob*.png
 *ad_hoc*
 *kelly*
