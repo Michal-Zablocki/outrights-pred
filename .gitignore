@@ -2,6 +2,7 @@
 __pycache__/*
 /data/club-rankings-ext/*
 /data/elo/*
+/data/html/*
 /data/fixtures_api/*
 /data/opta/*
 /data/transformed/*
