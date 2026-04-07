@@ -2,7 +2,7 @@
 
 # high prio
 
-# 0. run more complex tie breaking
+# 0. run more complex tie breaking => need to save actual fixtures, not just the table
 # 1. assume each team is 2 STDs stronger/weaker; std number of goals as well
 # 2. refactor run_full_table_sims; add odds calculation (inverse probs)
 # 3. also check how much disparity there is bettween the top and bottom teams in a league as an extra verification

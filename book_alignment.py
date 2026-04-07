@@ -244,4 +244,5 @@ def main():
     print(f"\nOptimized Elos saved to: {output_file}")
 
 
-main()
+if __name__ == "__main__":
+    main()
