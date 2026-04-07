@@ -1,5 +1,6 @@
 {
     "notebook.output.textLineLimit": 50,
     "notebook.output.scrolling": true,
-    "claudeCodeChat.permissions.yoloMode": false
+    "claudeCodeChat.permissions.yoloMode": false,
+    "python.analysis.extraPaths": ["src"]
 }
