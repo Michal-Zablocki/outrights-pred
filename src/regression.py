@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from typing import Optional
-
 import pandas as pd
 
 import matplotlib
@@ -103,7 +101,7 @@ def get_opta_country_codes(opta_df: pd.DataFrame) -> list[str]:
 def get_elo_ratings(
     opta_country_codes: list[str],
     elo_date: str,
-    file_path: Optional[str] = None,
+    file_path: str | None = None,
 ) -> pd.DataFrame:
     """Loads ELO ratings and filters data matched with Opta country codes."""
     file_path = f'data/elo/{elo_date.replace("-", "")}.csv'
@@ -152,7 +150,7 @@ def sanitize_elo_df(map_df: pd.DataFrame, elo_df: pd.DataFrame) -> pd.DataFrame:
 
 def sanitize_opta_df(
     map_df: pd.DataFrame, opta_df: pd.DataFrame, elo_df: pd.DataFrame
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Maps Opta team names other team names.
     Returns a DataFrame with matched and unmatched teams.
@@ -244,8 +242,8 @@ def filter_for_regression(merged_df: pd.DataFrame) -> pd.DataFrame:
 
 def run_regression(
     merged_df: pd.DataFrame,
-    country_to_ignore: Optional[str],
-    level_to_ignore: Optional[int],
+    country_to_ignore: str | None,
+    level_to_ignore: int | None,
 ) -> LinearRegression:
     """Runs linear regression on the merged DataFrame."""
     if country_to_ignore and level_to_ignore:
@@ -278,7 +276,7 @@ def run_regression(
     return lr
 
 
-def predict_elo(merged_df: pd.DataFrame, lr: LinearRegression) -> float:
+def predict_elo(merged_df: pd.DataFrame, lr: LinearRegression) -> pd.DataFrame:
     """Predicts ELO ratings using the regression model."""
     # Polynomial regression version
     # X = merged_df['Rating']
@@ -322,28 +320,28 @@ def plot_results(merged_df: pd.DataFrame, lr: LinearRegression) -> None:
     plt.title('ELO vs Opta Rating Regression')
     plt.legend()
     plt.grid(True)
-    plt.savefig('data/regression_plot.png')
+    # plt.savefig('data/regression_plot.png')
 
 
 def predict_elo_with_custom_weights(
     df: pd.DataFrame, coefficient: float, intercept: float
-) -> float:
+) -> pd.DataFrame:
     df['predicted_Elo'] = df['Rating'] * coefficient + intercept
 
     df['predicted_Elo'] = df['predicted_Elo'].apply(lambda x: round(x, 2))
     df['error'] = df['Elo'] - df['predicted_Elo']
     df['error'] = df['error'].apply(lambda x: round(x) if pd.notnull(x) else x)
-    df.to_csv('data/reg_results.csv', index=False)
+    # df.to_csv('data/reg_results.csv', index=False)
     return df
 
 
 def main_regression(
     elo_date: str,
     opta_date: str,
-    country_to_ignore: Optional[str] = None,
-    level_to_ignore: Optional[int] = None,
+    country_to_ignore: str | None = None,
+    level_to_ignore: int | None = None,
     **kwargs,
-):
+) -> None:
     """Main function to run the regression."""
     concat_opta_csvs(opta_date)
     opta_df = load_opta_ratings(opta_date)
@@ -366,8 +364,8 @@ def main_regression(
         [final_df, opta_unmatched_df],
         ignore_index=True,
     )
-    # predicted_df = predict_elo(new_df, lr)
-    predict_elo_with_custom_weights(new_df, coefficient=22.5801, intercept=-256.9035)
+    predicted_df = predict_elo(new_df, lr)
+    # predict_elo_with_custom_weights(new_df, coefficient=22.5801, intercept=-256.9035)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,6 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 from dotenv import load_dotenv
 import pandas as pd
@@ -15,8 +14,8 @@ API_TOKEN = os.getenv('X-RapidAPI-Key')
 
 
 def read_fixtures(
-    league_id: str, season: str, is_european_league: Optional[bool] = False, **kwargs
-) -> dict:
+    league_id: str, season: str, is_european_league: bool | None = False, **kwargs
+) -> list[dict]:
     """Read fixtures from a local JSON file."""
 
     with open(f"data/fixtures_api/fixtures_{league_id}_{season}.json", "r") as f:
@@ -117,7 +116,7 @@ def find_latest_elo_file() -> str:
 #     df.to_excel('tmp_team_names_api.xlsx', index=False)
 
 
-def find_league_id(country_code: str, league_name: str, **kwargs) -> str:
+def find_league_id(country_code: str, league_name: str, **kwargs) -> str | None:
     """Find league ID based on country code and league name."""
 
     with open("data/fixtures_api/leagues.json", "r") as f:
@@ -132,7 +131,7 @@ def find_league_id(country_code: str, league_name: str, **kwargs) -> str:
 
 
 def get_api_teams_and_elo_from_clubelo(
-    date: str, country_code: str, **kwargs
+    date: str, country_code: str | None, **kwargs
 ) -> pd.DataFrame:
     """Get teams and their ELO ratings from ClubElo data for a given date and country code, 1st league tier."""
 
@@ -182,7 +181,7 @@ def get_api_teams_and_elo_from_clubelo(
     return df
 
 
-def get_data_from_regression(country_code: Optional[str], **kwargs) -> pd.DataFrame:
+def get_data_from_regression(country_code: str | None, **kwargs) -> pd.DataFrame:
     """Get team names and predicted ELO from regression results, optionally filtered by country code."""
 
     team_map_df = pd.read_excel('teams_mapping/team_names.xlsx')

@@ -10,12 +10,19 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from etl import *
+from etl import (
+    api_get_fixtures_for_league,
+    download_elo_data,
+    get_api_teams_and_elo_from_clubelo,
+    get_data_from_regression,
+    read_fixtures,
+)
 
 
 load_dotenv()
 
-HFA = 0.045  # home field advantage; optimized
+HFA_MULT = 1.045  # home field advantage; optimized
+HFA_FLAT = 65  # flat home field advantage in Elo points; alternative to HFA multiplier
 K_FACTOR = 20  # Elo rating system K-factor
 NU = 1.65  # draw parameter; optimized
 
@@ -42,6 +49,10 @@ SORTING_ORDERS = {
     'ECL': _EURO_SORTING_ORDER,
 }
 
+_RESULTS = [(2, 0), (1, 1), (0, 2)]  # home_win, draw, away_win
+_ELO_DIFF_MIN = -1000
+_ELO_DIFF_MAX = 1000
+
 
 @dataclass
 class TeamInTable:
@@ -58,6 +69,30 @@ class TeamInTable:
     points: int
 
 
+def _probs_from_elo_diff(elo_diff: float) -> tuple[float, float, float]:
+    """Return (p_home_win, p_draw, p_away_win) from Elo difference."""
+    p_win_base = 1 / (1 + math.pow(10, -elo_diff / 400))
+    denom = 1 + NU * p_win_base * (1 - p_win_base)
+    pH = p_win_base / denom
+    pA = (1 - p_win_base) / denom
+    pD = 1 - pH - pA
+    return pH, pD, pA
+
+
+_PROB_TABLE = np.array(
+    [
+        _probs_from_elo_diff(elo_diff)
+        for elo_diff in range(_ELO_DIFF_MIN, _ELO_DIFF_MAX + 1)
+    ]
+)
+
+
+def _lookup_probs(home_elo: float, away_elo: float):
+    elo_diff = int(round(home_elo + HFA_FLAT - away_elo))
+    idx = np.clip(elo_diff - _ELO_DIFF_MIN, 0, _ELO_DIFF_MAX - _ELO_DIFF_MIN)
+    return _PROB_TABLE[idx]
+
+
 def get_sorting_order_for_country_code(country_code: str) -> list[str]:
     """Get sorting order based on country code."""
 
@@ -69,20 +104,7 @@ def get_sorting_order_for_country_code(country_code: str) -> list[str]:
 
 def _compute_elo_difference(home_elo: float, away_elo: float) -> float:
     """Elo difference adjusted for home field advantage."""
-    return home_elo * (1 + HFA) - away_elo
-
-
-def _compute_match_probabilities(
-    home_elo: float, away_elo: float
-) -> tuple[float, float, float]:
-    """Return (p_home_win, p_draw, p_away_win) from Elo ratings."""
-    elo_difference = _compute_elo_difference(home_elo, away_elo)
-    p_win_base = 1 / (1 + math.pow(10, -elo_difference / 400))
-    denom = 1 + NU * p_win_base * (1 - p_win_base)
-    pH = p_win_base / denom
-    pA = (1 - p_win_base) / denom
-    pD = 1 - pH - pA
-    return pH, pD, pA
+    return home_elo + HFA_FLAT - away_elo
 
 
 def _compute_elo_delta(elo_difference: float, outcome: float) -> float:
@@ -231,9 +253,17 @@ def build_table_from_fixtures_matrix(
                 team_rank = h2h_table[h2h_table['Club'] == team].index[0]
                 standings_df.loc[standings_df['Club'] == team, 'H2H'] = team_rank
 
+    ascending_setting = [
+        True if col in ['H2H', 'Random order'] else False for col in sorting_order
+    ]
+
     standings_df = standings_df.sort_values(
-        by=sorting_order, ascending=reverse
+        by=sorting_order, ascending=ascending_setting
     ).reset_index(drop=True)
+
+    if reverse:
+        standings_df = standings_df.iloc[::-1].reset_index(drop=True)
+
     standings_df.index += 1
 
     return standings_df
@@ -242,32 +272,25 @@ def build_table_from_fixtures_matrix(
 def df_to_dict_of_teams(standings_df: pd.DataFrame) -> dict:
     """Convert a DataFrame to a dictionary of TeamInTable."""
 
-    league_table = {}
-    for _, row in standings_df.iterrows():
-        league_table[row['Club']] = TeamInTable(
-            row['Club'],
-            row['Elo'],
-            row['Matches played'],
-            row['Wins'],
-            row['Draws'],
-            row['Losses'],
-            row['Goals for'],
-            row['Goals against'],
-            row['Goal difference'],
-            row['Goals away'],
-            row['Points'],
-        )
+    cols = standings_df[
+        [
+            'Club',
+            'Elo',
+            'Matches played',
+            'Wins',
+            'Draws',
+            'Losses',
+            'Goals for',
+            'Goals against',
+            'Goal difference',
+            'Goals away',
+            'Points',
+        ]
+    ].to_numpy()
+
+    league_table = {row[0]: TeamInTable(*row) for row in cols}
 
     return league_table
-
-
-def save_round_divide(num, den, precision=2) -> int | float:
-    """Safe division with rounding. Returns -1 if division by zero."""
-
-    if den == 0:
-        return -1
-    else:
-        return round(num / den, precision)
 
 
 def build_historical_standings_table_after_at_most_n_rounds(
@@ -283,6 +306,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
     is_european_league: bool | None = False,
     sorting_order: list[str] | None = None,
     reverse: bool = False,
+    point_deductions: dict[str, int] | None = None,
     **kwargs,
 ) -> tuple[pd.DataFrame, dict]:
     """Build historical standings table after at most n rounds."""
@@ -310,7 +334,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
         home_team = fixture['teams']['home']['name']
         fixture_teams.add(home_team)
 
-    elo_dict = {row['Club']: row['Elo'] for _, row in elo_df.iterrows()}
+    elo_dict = dict(zip(elo_df['Club'], elo_df['Elo']))
     elo_dict = {k: v for k, v in elo_dict.items() if k in fixture_teams}
 
     missing_teams = fixture_teams - set(elo_dict.keys())
@@ -339,7 +363,11 @@ def build_historical_standings_table_after_at_most_n_rounds(
     )
 
     standings_df = build_table_from_fixtures_matrix(
-        fixtures_matrix, sorting_order=sorting_order, reverse=reverse, elo_dict=elo_dict
+        fixtures_matrix,
+        sorting_order=sorting_order,
+        reverse=reverse,
+        elo_dict=elo_dict,
+        point_deductions=point_deductions,
     )
 
     return standings_df, fixtures_matrix
@@ -385,30 +413,45 @@ def _populate_fixtures_matrix_from_simulation(
 
     Uses Elo-based probabilities to generate results.
     Optionally updates Elo ratings in league_table in-place.
+
+    Example for one fixture with pH=0.55, pD=0.24, pA=0.21:
+        cumul[i] = [0.55, 0.79, 1.00]
+        u[i] = 0.62
+        → [0.62 >= 0.55, 0.62 >= 0.79, 0.62 >= 1.00] = [True, False, False]
+        → sum = 1 → draw
     """
-    for fixture in fixtures:
-        home_team = fixture['teams']['home']['name']
-        away_team = fixture['teams']['away']['name']
+    if not modify_elo:
+        home_teams = [f['teams']['home']['name'] for f in fixtures]
+        away_teams = [f['teams']['away']['name'] for f in fixtures]
 
-        home_elo = league_table[home_team].elo
-        away_elo = league_table[away_team].elo
+        probs = np.array(
+            [
+                _lookup_probs(league_table[home].elo, league_table[away].elo)
+                for home, away in zip(home_teams, away_teams)
+            ]
+        )
 
-        pH, pD, pA = _compute_match_probabilities(home_elo, away_elo)
-        result = random.choices(['home_win', 'away_win', 'draw'], [pH, pA, pD])[0]
+        cumul = np.cumsum(probs, axis=1)
+        u = np.random.random(len(fixtures))
+        result_indices = (u[:, None] < cumul).argmax(axis=1)
 
-        if result == 'home_win':
-            fixtures_matrix[home_team][away_team] = (2, 0)
-        elif result == 'away_win':
-            fixtures_matrix[home_team][away_team] = (0, 2)
-        elif result == 'draw':
-            fixtures_matrix[home_team][away_team] = (1, 1)
+        for i, (h, a) in enumerate(zip(home_teams, away_teams)):
+            fixtures_matrix[h][a] = _RESULTS[result_indices[i]]
+    else:
+        for fixture in fixtures:
+            home_team = fixture['teams']['home']['name']
+            away_team = fixture['teams']['away']['name']
 
-        if modify_elo:
-            outcome = (
-                1.0 if result == 'home_win' else (0.0 if result == 'away_win' else 0.5)
+            probs = _lookup_probs(
+                league_table[home_team].elo, league_table[away_team].elo
             )
-            _update_elo(league_table, home_team, away_team, outcome)
+            u = np.random.random()
+            result_i = int((u >= np.cumsum(probs)).sum())
 
+            fixtures_matrix[home_team][away_team] = _RESULTS[result_i]
+
+            outcome = [1.0, 0.5, 0.0][result_i]
+            _update_elo(league_table, home_team, away_team, outcome)
     return fixtures_matrix
 
 
@@ -423,11 +466,18 @@ def simulate_season_after_n_rounds(
     is_european_league: bool | None = False,
     sorting_order: list[str] | None = None,
     fixtures_matrix: dict[dict] | None = None,
+    point_deductions: dict[str, int] | None = None,
+    fixtures_to_simulate: list | None = None,
     **kwargs,
 ) -> pd.DataFrame:
-    """Simulate the rest of the season after n rounds."""
+    """Simulate the rest of the season after n rounds.
 
-    elo_dict = {row['Club']: row['Elo'] for _, row in standings_df.iterrows()}
+    Returns the full-season standings including already-played games.
+    If fixtures_matrix is not provided it is reconstructed from finished fixtures.
+    If fixtures_to_simulate is provided, the filtering step is skipped (pre-computed by caller).
+    """
+
+    elo_dict = dict(zip(standings_df['Club'], standings_df['Elo']))
 
     if fixtures is None:
         fixtures = read_fixtures(league_id, season, is_european_league)
@@ -435,26 +485,42 @@ def simulate_season_after_n_rounds(
     league_table = df_to_dict_of_teams(standings_df)
 
     if fixtures_matrix is None:
-        fixtures_matrix = _init_fixtures_matrix(list(league_table.keys()))
+        historical = [
+            f
+            for f in fixtures
+            if int(f['league']['round'].split(' ')[-1])
+            <= round_to_overwrite_with_sims_from
+            and f['fixture']['status']['long'] == 'Match Finished'
+            and str(f['fixture']['id']) != '1396000'
+        ]
+        fixtures_matrix = _populate_fixtures_matrix_from_historical(
+            set(league_table.keys()), historical, {}, modify_elo=False
+        )
 
-    fixtures_filtered = []
-    for fixture in fixtures:
-        round_str = int(fixture['league']['round'].split(' ')[-1])
-        if (round_str <= round_to_overwrite_with_sims_from) and (
-            fixture['fixture']['status']['long'] == 'Match Finished'
-        ):
-            continue
-        fixtures_filtered.append(fixture)
+    if fixtures_to_simulate is None:
+        fixtures_to_simulate = []
+        for fixture in fixtures:
+            round_str = int(fixture['league']['round'].split(' ')[-1])
+            if (round_str <= round_to_overwrite_with_sims_from) and (
+                fixture['fixture']['status']['long'] == 'Match Finished'
+            ):
+                continue
+            fixtures_to_simulate.append(fixture)
 
     fixtures_matrix = _populate_fixtures_matrix_from_simulation(
         league_table,
-        fixtures_filtered,
+        fixtures_to_simulate,
         fixtures_matrix,
         modify_elo=modify_elo_in_sim,
     )
 
     standings_df = build_table_from_fixtures_matrix(
-        fixtures_matrix, sorting_order, reverse, elo_dict=elo_dict, _compute_h2h=True
+        fixtures_matrix,
+        sorting_order,
+        reverse,
+        elo_dict=elo_dict,
+        _compute_h2h=True,
+        point_deductions=point_deductions,
     )
 
     return standings_df
@@ -478,6 +544,7 @@ def run_full_table_sims(
     is_european_league: bool | None = False,
     sorting_order: list[str] | None = None,
     fixtures_matrix: dict[dict] | None = None,
+    point_deductions: dict[str, int] | None = None,
     **kwargs,
 ) -> pd.DataFrame:
     """Run full table simulations of the season after n rounds."""
@@ -495,6 +562,7 @@ def run_full_table_sims(
                 stdev,
                 update_fixtures,
                 is_european_league,
+                point_deductions=point_deductions,
             )
         )
 
@@ -507,13 +575,23 @@ def run_full_table_sims(
 
     fixtures = read_fixtures(league_id, season, is_european_league)
 
+    fixtures_to_simulate = [
+        f
+        for f in fixtures
+        if not (
+            int(f['league']['round'].split(' ')[-1])
+            <= round_to_overwrite_with_sims_from
+            and f['fixture']['status']['long'] == 'Match Finished'
+        )
+    ]
+
     for _ in tqdm(range(number_of_sims)):
         new_standings_df = standings_df.copy()
 
         if stdev is not None and stdev != 0:
-            new_standings_df['Elo'] = new_standings_df['Elo'] + [
-                round(random.gauss(0, stdev)) for _ in range(new_standings_df.shape[0])
-            ]
+            new_standings_df['Elo'] = new_standings_df['Elo'] + np.round(
+                np.random.normal(0, stdev, size=new_standings_df.shape[0])
+            ).astype(int)
 
         winners_df = simulate_season_after_n_rounds(
             league_id,
@@ -526,12 +604,15 @@ def run_full_table_sims(
             is_european_league,
             sorting_order,
             fixtures_matrix,
+            point_deductions=point_deductions,
+            fixtures_to_simulate=fixtures_to_simulate,
         )
 
-        for i in range(winners_df.shape[0]):
-            club = winners_df.iloc[i]['Club']
-            main_results_df.at[club, i + 1] += 1
-            points = winners_df.iloc[i]['Points']
+        for row in winners_df.itertuples():
+            club = row.Club
+            place = row.Index
+            points = row.Points
+            main_results_df.at[club, place] += 1
             xpts[club] += points
 
     xpts_df = pd.DataFrame(list(xpts.items()), columns=['Club', 'Expected Points'])
@@ -543,23 +624,10 @@ def run_full_table_sims(
     df['xPts'] = df['xPts'].apply(lambda x: round(x / number_of_sims, 2))
 
     if is_european_league:
-        df['Top 8'] = df.apply(
-            lambda row: round(
-                sum([row[i] for i in range(1, 9)]) / number_of_sims * 100, 1
-            ),
-            axis=1,
-        )
-        df['9 - 24'] = df.apply(
-            lambda row: round(
-                sum([row[i] for i in range(9, 25)]) / number_of_sims * 100, 1
-            ),
-            axis=1,
-        )
-        df['25 - 36'] = df.apply(
-            lambda row: round(
-                sum([row[i] for i in range(25, 37)]) / number_of_sims * 100, 1
-            ),
-            axis=1,
+        df['Top 8'] = df[[i for i in range(1, 9)]].sum(axis=1) * 100 / number_of_sims
+        df['9 - 24'] = df[[i for i in range(9, 25)]].sum(axis=1) * 100 / number_of_sims
+        df['25 - 36'] = (
+            df[[i for i in range(25, 37)]].sum(axis=1) * 100 / number_of_sims
         )
 
     for place in range(1, standings_df.shape[0] + 1):
@@ -578,8 +646,6 @@ def run_full_table_sims(
     df.reset_index(drop=True, inplace=True)
     df.index += 1
     print(f'{number_of_sims} simulations')
-    if reverse:
-        print('Reverse: TRUE')
     Path('data/sims').mkdir(parents=True, exist_ok=True)
     df.to_excel(
         f'data/sims/{league_id}_{season}_{datetime.today().strftime("%Y-%m-%d")}_full_table.xlsx',
@@ -588,14 +654,121 @@ def run_full_table_sims(
     return df
 
 
+def get_top_n_odds(df: pd.DataFrame, top_n: int) -> pd.DataFrame:
+    """Extract top-N finish probability and decimal odds from a run_full_table_sims result.
+
+    Args:
+        df: Output of run_full_table_sims (integer position columns contain % probabilities).
+        top_n: Number of finishing positions to consider (e.g. 1 = champion, 6 = top 6).
+
+    Returns:
+        DataFrame with columns Club, Elo, xPts, Top N %, Top N Odds sorted by probability desc.
+    """
+    n_teams = df.shape[0]
+    effective_n = min(top_n, n_teams)
+    result = df[['Club', 'Elo', 'xPts']].copy()
+    result[f'Top {top_n} %'] = (
+        df[[i for i in range(1, effective_n + 1)]].sum(axis=1).round(1)
+    )
+    result[f'Top {top_n} Odds'] = result[f'Top {top_n} %'].apply(
+        lambda x: round(100 / x, 2) if x > 0 else 'N/A'
+    )
+    result = result.sort_values(by=[f'Top {top_n} %'], ascending=False).reset_index(
+        drop=True
+    )
+    result.index += 1
+    return result
+
+
+def run_top_n_sims(
+    top_n: list[int],
+    league_id: str,
+    season: str,
+    country_code_elo: str | None,
+    country_code_api: str | None,
+    elo_date: str | None,
+    number_of_sims: int,
+    reverse: bool = False,
+    last_round_for_standings: int = 999,
+    round_to_overwrite_with_sims_from: int = 999,
+    modify_elo_in_sim: bool = False,
+    modify_elo_retro: bool = False,
+    stdev: float | None = None,
+    standings_df: pd.DataFrame | None = None,
+    update_fixtures: bool | None = True,
+    is_european_league: bool | None = False,
+    sorting_order: list[str] | None = None,
+    fixtures_matrix: dict | None = None,
+    point_deductions: dict[str, int] | None = None,
+    **kwargs,
+) -> pd.DataFrame:
+    """Run full-table sims and return top-N finish probabilities and odds for each N in top_n.
+
+    Args:
+        top_n: List of N values to compute (e.g. [1, 2, 6]).  For reverse=True these
+               represent the bottom-N positions (e.g. relegation spots).
+        All other args are forwarded to run_full_table_sims unchanged.
+
+    Returns:
+        DataFrame with Club, Elo, xPts and then Top N % / Top N Odds columns for each N,
+        sorted by the first element of top_n descending.
+        Also saved as data/sims/multiple_sims_league_{id}_top_{n1}_{n2}_..._{date}.csv.
+    """
+    full_table = run_full_table_sims(
+        league_id=league_id,
+        season=season,
+        country_code_elo=country_code_elo,
+        country_code_api=country_code_api,
+        elo_date=elo_date,
+        number_of_sims=number_of_sims,
+        reverse=reverse,
+        last_round_for_standings=last_round_for_standings,
+        round_to_overwrite_with_sims_from=round_to_overwrite_with_sims_from,
+        modify_elo_in_sim=modify_elo_in_sim,
+        modify_elo_retro=modify_elo_retro,
+        stdev=stdev,
+        standings_df=standings_df,
+        update_fixtures=update_fixtures,
+        is_european_league=is_european_league,
+        sorting_order=sorting_order,
+        fixtures_matrix=fixtures_matrix,
+        point_deductions=point_deductions,
+    )
+
+    result = full_table[['Club', 'Elo', 'xPts']].copy()
+    for n in top_n:
+        odds_df = get_top_n_odds(full_table, n)
+        result = result.merge(
+            odds_df[['Club', f'Top {n} %', f'Top {n} Odds']], on='Club', how='left'
+        )
+
+    sort_col = f'Top {top_n[0]} %'
+    result = result.sort_values(by=[sort_col], ascending=False).reset_index(drop=True)
+    result.index += 1
+
+    Path('data/sims').mkdir(parents=True, exist_ok=True)
+    top_n_str = '_'.join(str(n) for n in top_n)
+    reverse_str = 'reverse_' if reverse else ''
+    result.to_csv(
+        f'data/sims/multiple_sims_league_{league_id}_top_{top_n_str}_{reverse_str}{datetime.today().strftime("%Y-%m-%d")}.csv',
+        index=False,
+    )
+
+    print(f'Top N: {top_n}')
+    if reverse:
+        print('Reverse: TRUE')
+
+    return result
+
+
 def simulate_odds(
-    standings_df,
-    league_id: int,
-    season: int,
+    standings_df: pd.DataFrame,
+    league_id: str,
+    season: str,
     is_european_league: bool,
     round_no: int,
     **kwargs,
-) -> dict:
+) -> pd.DataFrame:
     """Simulate odds for a given league, season and round."""
 
     fixtures = read_fixtures(league_id, season, is_european_league)
@@ -613,7 +786,7 @@ def simulate_odds(
         home_elo = standings_df[standings_df['Club'] == home_team]['Elo'].values[0]
         away_elo = standings_df[standings_df['Club'] == away_team]['Elo'].values[0]
 
-        pH, pD, pA = _compute_match_probabilities(home_elo, away_elo)
+        pH, pD, pA = _lookup_probs(home_elo, away_elo)
 
         odds_home = round(1 / pH, 2)
         odds_draw = round(1 / pD, 2)

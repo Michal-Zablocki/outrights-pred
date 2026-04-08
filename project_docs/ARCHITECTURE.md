@@ -43,12 +43,19 @@ Simulation engine. Imported by all active notebooks via `from sims_engine import
 **Orchestration**
 
 - `build_historical_standings_table_after_at_most_n_rounds()` — loads Elo + fixtures, filters to round N, calls `_populate_fixtures_matrix_from_historical` then `build_table_from_fixtures_matrix`
-- `simulate_season_after_n_rounds()` — single full-season simulation from a standings snapshot; calls `_populate_fixtures_matrix_from_simulation` then `build_table_from_fixtures_matrix`
+- `simulate_season_after_Rn_rounds()` — single full-season simulation; builds the historical matrix from finished fixtures if not provided, then simulates remaining games; returns the complete full-season standings (played + simulated)
 - `simulate_odds()` — returns match-level win/draw/loss odds for a given round
 
-**Multi-sim runner**
+**Multi-sim runners**
 
 - `run_full_table_sims()` — runs N simulations, outputs a probability for every finishing position per team; saves to `data/sims/`
+- `run_top_n_sims(top_n: list[int], ...)` — wrapper around `run_full_table_sims`; for each N in `top_n` computes the % probability and decimal odds of each team finishing in the top N positions; saves CSV to `data/sims/`; supports `reverse=True` for bottom-N (relegation) queries
+- `get_top_n_odds(df, top_n)` — pure extractor: takes any `run_full_table_sims` output and returns `Club | Elo | xPts | Top N % | Top N Odds` without re-running sims
+
+**Utilities**
+
+- `df_to_dict_of_teams()` — converts a standings DataFrame back to a `dict[str, TeamInTable]`; used by `simulate_season_after_n_rounds`
+- `get_sorting_order_for_country_code()` — returns the tie-breaking column order for a given country code; falls back to the Polish order for unmapped codes
 
 **Internal helpers**
 
@@ -59,7 +66,20 @@ Simulation engine. Imported by all active notebooks via `from sims_engine import
 - `_outcome_from_goals()` — maps (home_goals, away_goals) to Elo outcome (1/0.5/0)
 - `_init_fixtures_matrix()` — creates an empty matrix for a set of teams
 
-**Constants** (tuned via historical optimisation): `HFA = 0.045`, `K_FACTOR = 20`, `NU = 1.65`
+**Data structures**
+
+- `TeamInTable` dataclass — per-team standings row: name, elo, matches_played, wins, draws, losses, goals_for, goals_against, goals_diff, goals_away, points
+
+**Constants and config**
+
+- `HFA = 0.045`, `K_FACTOR = 20`, `NU = 1.65` — tuned via historical optimisation
+- `SORTING_ORDERS` — maps country/competition codes (`POL`, `UCL`, `UEL`, `ECL`) to their tie-breaking column sequences; European leagues use goal difference before H2H, Polish league uses H2H first
+
+---
+
+### `original_helpers.py` (legacy / reference)
+
+Monolithic predecessor to `etl.py` + `sims_engine.py`. Contains the original implementations of all ETL, simulation, and multi-sim runner functions (`run_multiple_sims`, `run_full_table_sims`, etc.) before the codebase was split and refactored. Kept for reference; not imported by any active code.
 
 ---
 
@@ -67,14 +87,18 @@ Simulation engine. Imported by all active notebooks via `from sims_engine import
 
 Bridges Opta Power Rankings and ClubElo ratings.
 
+- `main_regression()` — top-level orchestrator: concat → load → sanitize → merge → filter → regress → predict; called from `hist_opta_elo_linear_regression.ipynb`
 - `concat_opta_csvs()` — merges per-country raw Opta CSVs from `data/opta/raw/` into `data/transformed/opta/<date>.csv`
-- `load_opta_ratings()` — loads a transformed Opta CSV
-- `get_elo_ratings()` — loads a dated ClubElo CSV filtered by country codes
+- `load_opta_ratings()` — loads a transformed Opta CSV; normalises team names (title-case, strip)
+- `get_elo_ratings()` — loads a dated ClubElo CSV filtered by Opta country codes
+- `get_opta_country_codes()` — extracts unique country codes from an Opta DataFrame
 - `get_map_df()` — loads the ELO↔Opta name mapping from `teams_mapping/team_names.xlsx`
 - `sanitize_elo_df()` / `sanitize_opta_df()` — join/validate both datasets; writes unmatched teams to `data/transformed/elo/` and `data/transformed/opta/`
 - `get_final_df()` — inner-joins Elo and Opta on (Country, team name); saves `data/transformed/merged_df.csv`
+- `filter_for_regression()` — filters merged DataFrame to teams with Opta Rating ≥ 60 (outlier removal)
 - `run_regression()` — linear regression of Opta rating → Elo; prints R²
-- `predict_elo()` — applies the model to every team, saves `data/reg_results.csv`
+- `predict_elo()` — applies the fitted model to every team, saves `data/reg_results.csv`
+- `predict_elo_with_custom_weights()` — applies manually specified coefficient/intercept instead of the fitted model; currently used in `main_regression` with locked coefficients
 
 ---
 
@@ -91,24 +115,25 @@ Standalone script (also runnable as a module). Back-calculates Elo ratings that 
 
 ## Notebooks
 
-### Active / production
+### Active / production (`notebooks/`)
 
-| Notebook                                  | Purpose                                                                                                                       |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `working_version.ipynb`                 | Main simulation runner; calls `run_full_table_sims` for multiple leagues/outrights                                            |
-| `working_version_ekstraklasa_v2.ipynb`  | Same workflow scoped to the Polish Ekstraklasa                                                                                |
-| `working_version_books_odds.ipynb`      | Variant that substitutes Elo from `book_alignment.py` output (`data/optimized_elos_*.json`) instead of ClubElo/regression |
-| `hist_opta_elo_linear_regression.ipynb` | Runs the regression pipeline from `regression.py`; produces `data/reg_results.csv`                                        |
-| `bet_backtest_elo_only.ipynb`           | Backtests betting strategy using ClubElo ratings against historical results                                                   |
-| `bet_backtest_elo_with_opta.ipynb`      | Same backtest but with Opta-derived (regression) Elo                                                                          |
-| `bet_backtest_v1.ipynb`                 | Earlier backtest; loads concatenated football-data.co.uk CSVs                                                                 |
-| `kelly.ipynb`                           | Kelly criterion calculations on personal bet history (`priv_bets.csv`); outputs `priv_bets2.csv`                          |
-| `odds_comparison.ipynb`                 | Ad-hoc comparison of model odds vs bookmaker odds                                                                             |
-| `model_v2.ipynb`                        | Experimental model iteration                                                                                                  |
+| Notebook                        | Purpose                                                                                                    |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `working_version.ipynb`       | Main simulation runner; calls `run_full_table_sims` / `run_top_n_sims` for multiple leagues/outrights     |
+| `kelly.ipynb`                 | Kelly criterion calculations on personal bet history (`priv_bets.csv`); outputs `priv_bets2.csv`        |
 
-### Reference / samples
+### Archived (`notebooks/old/`)
 
-`sample_notebooks/` — frozen snapshots of working notebooks from earlier dates, kept for reference.
+| Notebook                                  | Purpose                                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------------------------ |
+| `hist_opta_elo_linear_regression.ipynb` | Runs the regression pipeline from `regression.py`; produces `data/reg_results.csv` |
+| `bet_backtest_elo_only.ipynb`           | Backtests betting strategy using ClubElo ratings against historical results          |
+| `bet_backtest_elo_with_opta.ipynb`      | Same backtest but with Opta-derived (regression) Elo                                 |
+| `bet_backtest_v1.ipynb`                 | Earlier backtest; loads concatenated football-data.co.uk CSVs                        |
+
+### Reference / samples (`sample_old_notebooks/`)
+
+Frozen snapshots of working notebooks from earlier dates (various leagues, books-odds variant, odds comparison), kept for reference.
 
 ---
 
@@ -132,7 +157,7 @@ data/
 │   └── merged_df.csv           Elo + Opta joined dataset
 ├── reg_results.csv             Regression output (Opta → predicted Elo per team)
 ├── optimized_elos_<season>.json  Book-aligned Elo per team
-└── sims/                       Full-table simulation outputs (xlsx)
+└── sims/                       Full-table outputs (.xlsx) and top-N outputs (.csv)
 ```
 
 ---
