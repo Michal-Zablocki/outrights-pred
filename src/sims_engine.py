@@ -307,6 +307,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
     sorting_order: list[str] | None = None,
     reverse: bool = False,
     point_deductions: dict[str, int] | None = None,
+    games_to_overwrite: list[tuple[str, str, str]] | None = None,
     **kwargs,
 ) -> tuple[pd.DataFrame, dict]:
     """Build historical standings table after at most n rounds."""
@@ -351,6 +352,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
         round_str = int(fixture['league']['round'].split(' ')[-1])
         if (round_str > last_round_no) or (
             fixture['fixture']['status']['long'] != 'Match Finished'
+            and fixture['fixture']['status']['long'] != 'Technical loss'
         ):
             continue
         if str(fixture['fixture']['id']) == '1396000':  # duplicate
@@ -359,7 +361,7 @@ def build_historical_standings_table_after_at_most_n_rounds(
         fixtures_filtered.append(fixture)
 
     fixtures_matrix = _populate_fixtures_matrix_from_historical(
-        fixture_teams, fixtures_filtered, elo_dict, modify_elo
+        fixture_teams, fixtures_filtered, elo_dict, modify_elo, games_to_overwrite
     )
 
     standings_df = build_table_from_fixtures_matrix(
@@ -378,6 +380,7 @@ def _populate_fixtures_matrix_from_historical(
     fixtures: list,
     elo_dict: dict,
     modify_elo: bool = False,
+    games_to_overwrite: dict[tuple[str, str], tuple[int, int]] | None = None,
 ) -> dict[str, dict]:
     """Populate a fixtures matrix from historical (finished) fixtures.
 
@@ -391,7 +394,12 @@ def _populate_fixtures_matrix_from_historical(
         home_goals = fixture['goals']['home']
         away_goals = fixture['goals']['away']
 
-        fixtures_matrix[home_team][away_team] = (home_goals, away_goals)
+        if games_to_overwrite and (home_team, away_team) in games_to_overwrite:
+            fixtures_matrix[home_team][away_team] = games_to_overwrite[
+                (home_team, away_team)
+            ]
+        else:
+            fixtures_matrix[home_team][away_team] = (home_goals, away_goals)
 
         if modify_elo:
             outcome = _outcome_from_goals(home_goals, away_goals)
@@ -408,6 +416,7 @@ def _populate_fixtures_matrix_from_simulation(
     fixtures: list,
     fixtures_matrix: dict[str, dict],
     modify_elo: bool = False,
+    games_to_overwrite: dict[tuple[str, str], tuple[int, int]] | None = None,
 ) -> dict[str, dict]:
     """Simulate future fixtures and populate the fixtures matrix.
 
@@ -436,7 +445,15 @@ def _populate_fixtures_matrix_from_simulation(
         result_indices = (u[:, None] < cumul).argmax(axis=1)
 
         for i, (h, a) in enumerate(zip(home_teams, away_teams)):
-            fixtures_matrix[h][a] = _RESULTS[result_indices[i]]
+            if games_to_overwrite and (h, a) in games_to_overwrite:
+                fixtures_matrix[h][a] = games_to_overwrite[(h, a)]
+            else:
+                fixtures_matrix[h][a] = _RESULTS[result_indices[i]]
+
+        try:
+            fixtures_matrix['Śląsk Wrocław']['Wisła Kraków'] = (3, 0)  #  walkover
+        except KeyError:
+            pass
     else:
         for fixture in fixtures:
             home_team = fixture['teams']['home']['name']
@@ -448,10 +465,14 @@ def _populate_fixtures_matrix_from_simulation(
             u = np.random.random()
             result_i = int((u >= np.cumsum(probs)).sum())
 
-            fixtures_matrix[home_team][away_team] = _RESULTS[result_i]
-
-            outcome = [1.0, 0.5, 0.0][result_i]
-            _update_elo(league_table, home_team, away_team, outcome)
+            if games_to_overwrite and (home_team, away_team) in games_to_overwrite:
+                fixtures_matrix[home_team][away_team] = games_to_overwrite[
+                    (home_team, away_team)
+                ]
+            else:
+                fixtures_matrix[home_team][away_team] = _RESULTS[result_i]
+                outcome = [1.0, 0.5, 0.0][result_i]
+                _update_elo(league_table, home_team, away_team, outcome)
     return fixtures_matrix
 
 
@@ -468,6 +489,7 @@ def simulate_season_after_n_rounds(
     fixtures_matrix: dict[dict] | None = None,
     point_deductions: dict[str, int] | None = None,
     fixtures_to_simulate: list | None = None,
+    games_to_overwrite: dict[tuple[str, str], tuple[int, int]] | None = None,
     **kwargs,
 ) -> pd.DataFrame:
     """Simulate the rest of the season after n rounds.
@@ -490,11 +512,18 @@ def simulate_season_after_n_rounds(
             for f in fixtures
             if int(f['league']['round'].split(' ')[-1])
             <= round_to_overwrite_with_sims_from
-            and f['fixture']['status']['long'] == 'Match Finished'
-            and str(f['fixture']['id']) != '1396000'
+            and (
+                f['fixture']['status']['long'] == 'Match Finished'
+                or f['fixture']['status']['long'] == 'Technical loss'
+            )
+            and str(f['fixture']['id']) != '1396000'  # duplicate issue
         ]
         fixtures_matrix = _populate_fixtures_matrix_from_historical(
-            set(league_table.keys()), historical, {}, modify_elo=False
+            set(league_table.keys()),
+            historical,
+            {},
+            modify_elo=False,
+            games_to_overwrite=games_to_overwrite,
         )
 
     if fixtures_to_simulate is None:
@@ -503,6 +532,7 @@ def simulate_season_after_n_rounds(
             round_str = int(fixture['league']['round'].split(' ')[-1])
             if (round_str <= round_to_overwrite_with_sims_from) and (
                 fixture['fixture']['status']['long'] == 'Match Finished'
+                or fixture['fixture']['status']['long'] == 'Technical loss'
             ):
                 continue
             fixtures_to_simulate.append(fixture)
@@ -512,6 +542,7 @@ def simulate_season_after_n_rounds(
         fixtures_to_simulate,
         fixtures_matrix,
         modify_elo=modify_elo_in_sim,
+        games_to_overwrite=games_to_overwrite,
     )
 
     standings_df = build_table_from_fixtures_matrix(
@@ -545,8 +576,9 @@ def run_full_table_sims(
     sorting_order: list[str] | None = None,
     fixtures_matrix: dict[dict] | None = None,
     point_deductions: dict[str, int] | None = None,
+    games_to_overwrite: dict[tuple[str, str], tuple[int, int]] | None = None,
     **kwargs,
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Run full table simulations of the season after n rounds."""
 
     if standings_df is None or fixtures_matrix is None:
@@ -563,6 +595,7 @@ def run_full_table_sims(
                 update_fixtures,
                 is_european_league,
                 point_deductions=point_deductions,
+                games_to_overwrite=games_to_overwrite,
             )
         )
 
@@ -581,14 +614,20 @@ def run_full_table_sims(
         if not (
             int(f['league']['round'].split(' ')[-1])
             <= round_to_overwrite_with_sims_from
-            and f['fixture']['status']['long'] == 'Match Finished'
+            and (
+                f['fixture']['status']['long'] == 'Match Finished'
+                or f['fixture']['status']['long'] == 'Technical loss'
+            )
         )
     ]
 
-    for _ in tqdm(range(number_of_sims)):
-        new_standings_df = standings_df.copy()
+    teams = main_results_df.index.tolist()
+    h2h_table = pd.DataFrame(0, index=teams, columns=teams)
+    new_standings_df = standings_df.copy()
 
+    for _ in tqdm(range(number_of_sims)):
         if stdev is not None and stdev != 0:
+            new_standings_df = standings_df.copy()
             new_standings_df['Elo'] = new_standings_df['Elo'] + np.round(
                 np.random.normal(0, stdev, size=new_standings_df.shape[0])
             ).astype(int)
@@ -606,6 +645,7 @@ def run_full_table_sims(
             fixtures_matrix,
             point_deductions=point_deductions,
             fixtures_to_simulate=fixtures_to_simulate,
+            games_to_overwrite=games_to_overwrite,
         )
 
         for row in winners_df.itertuples():
@@ -614,6 +654,18 @@ def run_full_table_sims(
             points = row.Points
             main_results_df.at[club, place] += 1
             xpts[club] += points
+
+        teams_ordered = winners_df['Club'].tolist()
+        for i in range(len(teams_ordered)):
+            for j in range(i + 1, len(teams_ordered)):
+                h2h_table.at[teams_ordered[i], teams_ordered[j]] += 1
+
+    h2h_table = h2h_table * 100 / number_of_sims
+    h2h_table = h2h_table.round(1)
+
+    h2h_table.to_csv(
+        f'data/sims/{league_id}_{season}_{datetime.today().strftime("%Y-%d")}_h2h_table.csv'
+    )
 
     xpts_df = pd.DataFrame(list(xpts.items()), columns=['Club', 'Expected Points'])
     df = pd.merge(main_results_df, xpts_df, on='Club', how='inner')
@@ -647,11 +699,11 @@ def run_full_table_sims(
     df.index += 1
     print(f'{number_of_sims} simulations')
     Path('data/sims').mkdir(parents=True, exist_ok=True)
-    df.to_excel(
-        f'data/sims/{league_id}_{season}_{datetime.today().strftime("%Y-%m-%d")}_full_table.xlsx',
+    df.to_csv(
+        f'data/sims/{league_id}_{season}_{datetime.today().strftime("%Y-%m-%d")}_full_table.csv',
         index=False,
     )
-    return df
+    return df, h2h_table
 
 
 def get_top_n_odds(df: pd.DataFrame, top_n: int) -> pd.DataFrame:
@@ -714,7 +766,7 @@ def run_top_n_sims(
         sorted by the first element of top_n descending.
         Also saved as data/sims/multiple_sims_league_{id}_top_{n1}_{n2}_..._{date}.csv.
     """
-    full_table = run_full_table_sims(
+    full_table, _ = run_full_table_sims(
         league_id=league_id,
         season=season,
         country_code_elo=country_code_elo,
